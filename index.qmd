@@ -1,0 +1,48 @@
+---
+# The book's home page. Edit the title/subtitle/description to introduce
+# yourself and what this portfolio contains.
+title: "My Data Science Portfolio"
+author: "Your Name"
+date: today
+---
+
+```{r}
+#| include: false
+# Package setup lives in one shared chunk so every chapter starts from a
+# consistent environment. Add libraries you use across the book here.
+library(tidyverse)
+```
+
+## Welcome 👋
+
+This is **your** data science portfolio. Over the semester it will grow from a
+single exploratory data analysis (EDA) project into a collection of
+reproducible analyses, each versioned with git, with dependencies pinned via
+renv/uv, and published to a URL on Posit Connect.
+
+The chapters in this book are:
+
+- **Chapter 1, EDA project**: your first real analysis, sourcing a dataset
+  you care about by code from an open-data portal (data.gouv.fr, or your own
+  country's) and (optionally) pinning it with `{pins}`.
+- **Chapters 2 & 3, later courses**: placeholders that other instructors will
+  fill in over the semester. Leave them in place.
+
+## How to use this scaffold
+
+This folder is a *starter book*: copy it into your own workspace and make it
+yours. See [`README.md`](README.md) for the full walkthrough.
+
+```{r}
+#| label: fig-eda-sneak-peek
+#| fig-cap: "A first glimpse of your data. Replace this figure with your EDA output."
+# A tiny placeholder plot so the book renders before you add your own analysis.
+ggplot(data.frame(x = rnorm(200), y = rnorm(200)), aes(x, y)) +
+  geom_point(alpha = 0.4, colour = "#2E7D6B") +
+  labs(x = "your variable", y = "your other variable")
+```
+
+The book is **language-agnostic**: Chapter 1 uses R, but later chapters could
+just as easily use Python. What makes it reproducible is the pipeline around
+it: data sourced reproducibly, code that renders from source, dependencies
+pinned, everything under version control.

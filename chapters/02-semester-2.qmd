@@ -1,0 +1,15 @@
+---
+title: "Chapter 2 · Second-semester course"
+author: "Your Name"
+date: today
+---
+
+<!-- Placeholder chapter.
+
+This file is intentionally empty. Later in the semester another course will
+slot its analysis in here. Your job for now is simply to KEEP IT; it makes
+room for your portfolio to grow. When you are asked to add a section, you will
+replace this page with a real analysis (a `.qmd` document plus the code that
+produces it).
+
+Feel free to add a few words about what you expect this chapter to become. -->

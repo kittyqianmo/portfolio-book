@@ -1,0 +1,37 @@
+project:
+  type: book
+
+book:
+  title: "My Data Science Portfolio"
+  # TODO: put your name / a short subtitle. This is the cover of your portfolio.
+  author: "Your Name"
+  date: today
+
+  # The ordered list of chapters in the book. Chapter files live in chapters/.
+  # The first chapter (01-EDA.qmd) is YOUR EDA project, sourced by code from an
+  # open-data portal of your choice (see the session-2 lab). The later chapters
+  # are placeholders that other courses will fill in over the semester; leave
+  # them in place so the book keeps growing.
+  chapters:
+    - index.qmd
+    - chapters/01-EDA.qmd
+    - chapters/02-semester-2.qmd
+    - chapters/03-semester-3.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    # Base theme: `cosmo` is just a starting point. Your personal style lives
+    # in the two files beside this one:
+    #   - `_brand.yml`  → colours + fonts (edit the hex values, done)
+    #   - `styles.scss` → anything structural (see the file's comments)
+    theme: cosmo
+    css: styles.scss
+    toc: true
+    toc-title: "In this chapter"
+    number-sections: false
+    # Keep every figure and table labelled so your portfolio reads as a report,
+    # not a pile of outputs.
+    fig-cap-location: margin

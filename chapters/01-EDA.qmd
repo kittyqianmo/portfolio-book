@@ -1,0 +1,114 @@
+---
+title: "Chapter 1 · My EDA project"
+author: "Your Name"
+date: today
+---
+
+> **How to fill this chapter in**
+> This is your main portfolio piece. The numbered sections below follow the
+> **IMRAD** structure of research: question ≈ *introduction*, getting the
+> data + cleaning decisions ≈ *methods*, plotting the story ≈ *results*, and
+> findings ≈ *discussion*. In the *Reproducible Workflows* course:
+>
+> - **Session 2** lab: find a dataset you care about on an open-data portal
+>   (data.gouv.fr or your own country's), source it **reproducibly by code**,
+>   run an EDA, clean the data, and commit it to git.
+> - **Session 3** work block: finish and polish the chapter, pin your data and
+>   environment, open a pull request for review, and publish the book to a URL.
+>
+> Everything between the `TODO` markers below is a template to replace with
+> your own content.
+
+## The question
+
+<!-- TODO: In a sentence or two, what question are you trying to answer with this dataset?  -->
+
+## Getting the data
+
+The data is sourced **by code** from an open-data portal of your choice. Because
+the download lives inside the document, it is recorded in the analysis itself;
+anyone who re-renders this document gets the same data and the same results.
+Record the dataset's **publisher and URL** in the text so the provenance is
+explicit.
+
+The only portal-specific part is the *fetch*. This template shows two ways;
+use the one that fits your portal:
+
+- **`{rdatagouv}`** (data.gouv.fr only, optional): search/download from R.
+- **Any portal by URL**: `download.file()` works with any portal's direct
+  download link.
+
+```{r}
+#| label: setup
+#| message: false
+# Load what you use. {rdatagouv} only if you're on data.gouv.fr and want it.
+# library(rdatagouv)    # search / download datasets from data.gouv.fr
+library(janitor)        # clean column names, tabulate with tabyl()
+library(naniar)         # visualise missing values
+library(skimr)          # one-line data summary with skim()
+```
+
+```{r}
+#| label: download
+#| message: false
+# TODO: replace with the code you wrote in the Session-2 lab.
+# Option A — data.gouv.fr via {rdatagouv}:
+# ds <- get_dataset("my-dataset-slug"); url <- ds$resources$url[1]
+# Option B — any portal by direct URL:
+# url <- "https://www.example-portal.org/.../my-data.csv"
+# download.file(url, "data/my-data.csv")
+```
+
+> **Optionally pin the fetched copy** with `{pins}` so the chapter reads from a
+> versioned local board instead of hitting the network on every render:
+>
+> ```r
+> board <- pins::board_folder("pins/", versioned = TRUE)
+> pins::pin_write(board, dat, "my-data", type = "csv")
+> dat    <- pins::pin_read(board, "my-data")
+> ```
+
+
+## A first look
+
+```{r}
+#| label: skim
+#| fig-cap: "A one-line summary of the dataset."
+# The skim() output gives you type, missingness and distributions at a glance.
+# skim(dat)
+```
+
+```{r}
+#| label: missingness
+#| fig-cap: "Missing values across variables."
+# vis_miss(dat) — where is data missing, and why might that be?
+```
+
+## Cleaning decisions {#sec-cleaning}
+
+<!-- TODO: document the decisions you made while cleaning the data. What did you
+rename, recode, or drop, and why? A defensible cleaning decision is a feature
+of a good analysis, not an afterthought. -->
+
+## Plotting the story
+
+<!-- TODO: replace with your figures. Give every figure a caption and refer to
+it in the text (e.g. "Fig. 1 shows that …"). If a figure uses randomness
+(sampling, jitter, a simulation), fix the seed *inside* that cell with
+`withr::with_seed(2025, { ... })` so the figure is identical on every render. -->
+
+```{r}
+#| label: fig-main
+#| fig-cap: "The central figure of your analysis."
+```
+
+## Findings
+
+<!-- TODO: what did you learn? This is your discussion: put your findings and
+the original question back into perspective. Keep it honest: say what you
+found, and what you did NOT find. -->
+
+---
+
+*This chapter is your semester's centrepiece. Revisit it as you learn new
+techniques and make it your best work by the final gallery walk.*

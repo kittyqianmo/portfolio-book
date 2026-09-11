@@ -1,0 +1,7 @@
+---
+title: "References"
+---
+
+<!-- Bibliography page. Citations live in references.bib and are pulled in here
+automatically. Add a citation anywhere in your chapters with `@key` and it
+will appear in this section. -->

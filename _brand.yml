@@ -1,0 +1,54 @@
+# ─── Your portfolio's brand ────────────────────────────────────────────────
+# This file is a Quarto `_brand.yml`: edit the colours/fonts below and the
+# whole book restyles on the next render. It is a *placeholder* — a sensible
+# starting seed (the ENSAI course palette). Make it yours: pick colours you
+# like, swap the fonts, and the book will feel like *your* portfolio, not the
+# course materials.
+#
+#   Quarto auto-discovers `_brand.yml` sitting next to `_quarto.yml`, so no
+#   wiring is needed to use it. For deeper control (spacing, layout, custom
+#   components) see `styles.scss` — the two work together; `_brand.yml` drives
+#   the palette/typography, `styles.scss` anything CSS-like on top.
+#
+# Colours: palette holds named colours; the semantic slots (primary,
+# foreground, background, …) pick which ones mean what. Any `"#hex"` is fair
+# game. Rule of thumb — keep ~3 accents + one ink + one paper.
+
+color:
+  palette:
+    teal:    "#2E7D6B"   # primary accent (assignments / structure)
+    amber:   "#E8A33D"   # secondary accent (highlights / results)
+    indigo:  "#4A5899"   # tertiary accent (links / emphasis)
+    ink:     "#17251F"   # near-black ink for body text
+    paper:   "#F1EEE6"   # warm off-white paper for the page
+    white:   "#FFFFFF"
+  primary: teal
+  secondary: amber
+  tertiary: indigo
+  foreground: ink
+  background: paper
+
+# Typography: swap the fonts for ones you like (Google Fonts via `source:
+# google`, or drop `source:` for the browser defaults). `monospace` styles the
+# code blocks your EDA chapter is full of.
+#
+#   typography:
+#     fonts:
+#       - family: Lora        # example — uncomment to try
+#         source: google
+#         weight: [400, 600]
+#     base:
+#       family: Lora
+#     headings:
+#       family: Lora
+#       weight: 600
+#     monospace:
+#       family: "Fira Code"
+#       source: google
+
+# Meta: identity that shows in the browser tab / share cards. Feel free to
+# trim or extend.
+#
+#   meta:
+#     name: My Data Science Portfolio
+#     link: https://example.com
