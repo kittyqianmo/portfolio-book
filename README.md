@@ -1,9 +1,9 @@
 # Portfolio Book Scaffold
 
 This folder is a **starter Quarto book**, the end objective of the
-*Reproducible Workflows* course. You copy it into your own workspace, make it
-yours, and it grows into your personal data science portfolio over the
-semester.
+*Reproducible Workflows* course. You can click the link [Yi Qian's Portfolio](https://kittyqianmo.github.io/portfolio-book/)to explore the results. 
+
+
 
 ```
 portfolio-book/
