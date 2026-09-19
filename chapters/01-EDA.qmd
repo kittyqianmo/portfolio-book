@@ -129,7 +129,7 @@ colSums(is.na(df))
 
 ```{r}
 #| label: fig-main
-#| fig-cap: "The central figure of your analysis."
+#| fig-cap: "The central figure of My analysis."
 #| message: false
 
 
@@ -138,25 +138,38 @@ ggplot(df, aes(x = sun_hours_sum, y = potentiel_kwh, color = region)) +
   geom_point(size = 1) +
   labs(title = "Sun hours vs Solar production potential",
        x = "Sun hours", y = "Potentiel (kWh)")+
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom",    
+  legend.text = element_text(size = 4),    
+    legend.key.size = unit(0.3, "cm"),      
+    legend.spacing.x = unit(0.1, "cm"))+
+  guides(color = guide_legend(nrow = 5, byrow = TRUE)) 
 
 ggplot(df, aes(x = avg_temp, y = potentiel_kwh, color = region)) +
   geom_point(size = 1) +
   labs(title = "average temperature vs Solar production potential",
        x = "average temperature", y = "Potentiel (kWh)")+
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom",    
+  legend.text = element_text(size = 4),    
+    legend.key.size = unit(0.3, "cm"),      
+    legend.spacing.x = unit(0.1, "cm"))+
+  guides(color = guide_legend(nrow = 5, byrow = TRUE)) 
 
 
-ggplot(df, aes(x = region, y = irradiation, fill = climat)) +geom_boxplot(notch = FALSE,
+ggplot(df, aes(x = region, y = irradiation, fill = climat)) +
+  geom_boxplot(notch = FALSE,
     outlier.color = "purple",
     outlier.shape = 8,
     outlier.size = 2,
-    alpha = 0.7)+
+    alpha = 0.7) +
   labs(title = "Irradiation distribution",
        x = "Region",
        y = "Irradiation") +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 7),
 
+    
+  )
 
 
 library(pheatmap)
