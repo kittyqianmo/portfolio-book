@@ -1,0 +1,10 @@
+file: my-data.csv
+file_size: 3368671
+pin_hash: 813a9373755f4ebe
+type: csv
+title: 'my-data: a pinned 11769 x 31 data frame'
+description: ~
+tags: ~
+urls: ~
+created: 20260919T044910Z
+api_version: 1

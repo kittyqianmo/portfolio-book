@@ -1,48 +1,3 @@
----
-title: "Chapter 1 · My EDA project"
-author: "Yi Qian"
-date: today
----
-
-> **How to fill this chapter in**
-> This is your main portfolio piece. The numbered sections below follow the
-> **IMRAD** structure of research: question ≈ *introduction*, getting the
-> data + cleaning decisions ≈ *methods*, plotting the story ≈ *results*, and
-> findings ≈ *discussion*. In the *Reproducible Workflows* course:
->
-> - **Session 2** lab: find a dataset you care about on an open-data portal
->   (data.gouv.fr or your own country's), source it **reproducibly by code**,
->   run an EDA, clean the data, and commit it to git.
-> - **Session 3** work block: finish and polish the chapter, pin your data and
->   environment, open a pull request for review, and publish the book to a URL.
->
-> Everything between the `TODO` markers below is a template to replace with
-> your own content.
-
-## The question
-
-what is the dominant factor to effect the potential of photovoltaic power generation?
-
-
-## Getting the data
-
-The data is sourced **by code** from an open-data portal of your choice. Because
-the download lives inside the document, it is recorded in the analysis itself;
-anyone who re-renders this document gets the same data and the same results.
-Record the dataset's **publisher and URL** in the text so the provenance is
-explicit.
-
-The only portal-specific part is the *fetch*. This template shows two ways;
-use the one that fits your portal:
-
-- **`{rdatagouv}`** (data.gouv.fr only, optional): search/download from R.
-- **Any portal by URL**: `download.file()` works with any portal's direct
-  download link.
-
-```{r}
-#| label: setup
-#| message: false
-
 install.packages("rdatagouv")
 install.packages("janitor")
 install.packages("pheatmap")
@@ -52,15 +7,6 @@ library(Factoshiny)
 install.packages("pins")
 
 library(pins)
-
-
-
-
-```
-
-```{r}
-#| label: download
-#| message: false
 list1<-rdatagouv::dg_find_datasets(q = "climat", schema_only = TRUE) 
 
 list1$id
@@ -68,29 +14,13 @@ list1$id
 dat<-rdatagouv::dg_pull_dataset("6883cd2b5196629da0088505")
 
 
-
-#board <- board_folder("pins/", versioned = TRUE)
-#df <- pin_read(board, "my-data")
-
-```
-
-> **Optionally pin the fetched copy** with `{pins}` so the chapter reads from a
-> versioned local board instead of hitting the network on every render:
->
-```{r}
-
 board <- pins::board_folder("pins/", versioned = TRUE)
 pins::pin_write(board, dat, "my-data", type = "csv")
 df  <- pins::pin_read(board, "my-data")
-```
 
-
-## A first look and Cleaning
-
-```{r}
-#| label: skim
-#| fig-cap: "A one-line summary of the dataset."
-#| message: false
+#board <- board_folder("pins/", versioned = TRUE)
+#df <- pin_read(board, "my-data")
+#EDA
 head(df)
 
 df |> 
@@ -99,7 +29,7 @@ df |>
 
 naniar::gg_miss_var(df)
 
-df |> tidyr::drop_na()|> head(5)
+df |> tidyr::drop_na()
 
 colnames(df)<-df |> clean_names() |> names()
 
@@ -115,21 +45,6 @@ df<-df|>mutate(avg_temp=avg_temperature_q1_c+avg_temperature_q2_c+avg_temperatur
 
 colSums(is.na(df))
 
-
-```
-
-
-
-
-
-## Plotting the story
-
-
-
-```{r}
-#| label: fig-main
-#| fig-cap: "The central figure of your analysis."
-#| message: false
 
 
 library(ggplot2)
@@ -180,12 +95,6 @@ pheatmap(cor_mat,
          main = "Correlation Heatmap")
 
 
-```
-
-
-## Findings
-
-```{r}
 #pca
 sapply(df, class)
 
@@ -228,13 +137,12 @@ summary(pca_res)
 round(pca_res$quanti.sup$cor[, 1:3], 2)
 
 
-
-```
----
-
-*The dominant factors for photovoltaic power generation potential are temperature and irradiation. Dim.1 explains 48.2% of the variance, while temperature (loading 0.894)and radiation (loading 0.877) drives positively and the latitude (loading -0.817) drives negatively.The correlation coefficient between potentiel_kwh and Dim.1 is 0.88 which means the potentiel_kwh is determined by Dim.1. So the key point to improve potentiel_kwh is the temperature and irradation, and the region in high latitude has lower potential.*
-
-[@wickham2019r4ds]
-
-## References
-
+#The dominant factors for photovoltaic power generation 
+# potential are temperature and irradiation. Dim.1 explains
+#  48.2% of the variance, while temperature (loading 0.894)and
+#  radiation (loading 0.877) drives positively and the latitude
+# (loading -0.817) drives negatively.The correlation coefficient
+#  between potentiel_kwh and Dim.1 is 0.88 which means the
+#  potentiel_kwh is determined by Dim.1. So the key point to improve
+# potentiel_kwh is the temperature and irradation, and the region in
+# high latitude has lower potential.

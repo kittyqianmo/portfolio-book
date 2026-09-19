@@ -4,7 +4,7 @@ project:
 book:
   title: "My Data Science Portfolio"
   # TODO: put your name / a short subtitle. This is the cover of your portfolio.
-  author: "Kitty"
+  author: "Yi Qian"
   date: today
 
   # The ordered list of chapters in the book. Chapter files live in chapters/.

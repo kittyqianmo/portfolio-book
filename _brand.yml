@@ -16,15 +16,15 @@
 
 color:
   palette:
-    teal:    "#2E7D6B"   # primary accent (assignments / structure)
-    amber:   "#E8A33D"   # secondary accent (highlights / results)
-    indigo:  "#4A5899"   # tertiary accent (links / emphasis)
-    ink:     "#17251F"   # near-black ink for body text
-    paper:   "#F1EEE6"   # warm off-white paper for the page
+    navy:    "#1F3A5F"   # primary accent (assignments / structure)
+    sky:     "#4A90D9"   # secondary accent (highlights / results)
+    steel:   "#5C7A99"   # tertiary accent (links / emphasis)
+    ink:     "#0F1A26"   # near-black ink for body text
+    paper:   "#EDF1F5"   # cool off-white paper for the page
     white:   "#FFFFFF"
-  primary: teal
-  secondary: amber
-  tertiary: indigo
+  primary: navy
+  secondary: sky
+  tertiary: steel
   foreground: ink
   background: paper
 
