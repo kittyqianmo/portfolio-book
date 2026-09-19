@@ -1,0 +1,43 @@
+/* ─── Your portfolio's stylesheet (optional) ────────────────────────────────
+ *
+ * `_brand.yml` gives you colour/typography control with zero CSS knowledge —
+ * start there. This file is for the *structural* stuff `_brand.yml` can't
+ * express: spacing, layout, custom components, tiny QoL tweaks.
+ *
+ * How it's wired: `_quarto.yml` has `format.html.css: styles.scss`. Quarto
+ * compiles the SCSS for you — edit this file, re-render, done. Everything is
+ * optional; the file ships commented-out so it's a no-op until you uncomment.
+ *
+ * To find what to target, right-click any element in your rendered book and
+ * *Inspect* (Developer Tools), or open the book's compiled CSS. The selectors
+ * below are the common ones for a Quarto `html` book.
+ */
+
+/* Example — nudge the sidebar width so long filenames don't wrap
+ *
+ * .sidebar {
+ *   width: 300px;
+ * }
+ */
+
+/* Example — give code blocks a light tint so they read like a console
+ *
+ * div.sourceCode {
+ *   background-color: #faf7f0;
+ *   border-radius: 6px;
+ * }
+ */
+
+/* Example — make in-line code use the indigo accent
+ *
+ * code {
+ *   color: #4A5899;
+ * }
+ */
+
+/* Example — rounded cards / nicer figure frames
+ *
+ * .figure, figure img {
+ *   border-radius: 8px;
+ * }
+ */
