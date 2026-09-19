@@ -1,0 +1,17 @@
+{
+  "hash": "1ef9827ffceafbe2aa8b358c87965cf8",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\n# The book's home page. Edit the title/subtitle/description to introduce\n# yourself and what this portfolio contains.\ntitle: \"My Data Science Portfolio\"\nauthor: \"Your Name\"\ndate: today\n---\n\n\n\n## Welcome 👋\n\nThis is **your** data science portfolio. Over the semester it will grow from a\nsingle exploratory data analysis (EDA) project into a collection of\nreproducible analyses, each versioned with git, with dependencies pinned via\nrenv/uv, and published to a URL on Posit Connect.\n\nThe chapters in this book are:\n\n- **Chapter 1, EDA project**: your first real analysis, sourcing a dataset\n  you care about by code from an open-data portal (data.gouv.fr, or your own\n  country's) and (optionally) pinning it with `{pins}`.\n- **Chapters 2 & 3, later courses**: placeholders that other instructors will\n  fill in over the semester. Leave them in place.\n\n## How to use this scaffold\n\nThis folder is a *starter book*: copy it into your own workspace and make it\nyours. See [`README.md`](README.md) for the full walkthrough.\n\n\n::: {.cell}\n\n```{.r .cell-code}\n# A tiny placeholder plot so the book renders before you add your own analysis.\nggplot(data.frame(x = rnorm(200), y = rnorm(200)), aes(x, y)) +\n  geom_point(alpha = 0.4, colour = \"#2E7D6B\") +\n  labs(x = \"your variable\", y = \"your other variable\")\n```\n\n::: {.cell-output-display}\n![A first glimpse of your data. Replace this figure with your EDA output.](index_files/figure-html/fig-eda-sneak-peek-1.png){#fig-eda-sneak-peek width=672}\n:::\n:::\n\n\nThe book is **language-agnostic**: Chapter 1 uses R, but later chapters could\njust as easily use Python. What makes it reproducible is the pipeline around\nit: data sourced reproducibly, code that renders from source, dependencies\npinned, everything under version control.\n",
+    "supporting": [
+      "index_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

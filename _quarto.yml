@@ -1,6 +1,9 @@
 project:
   type: book
 
+execute:
+  freeze: auto
+
 book:
   title: "My Data Science Portfolio"
   # TODO: put your name / a short subtitle. This is the cover of your portfolio.
