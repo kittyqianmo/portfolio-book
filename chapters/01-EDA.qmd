@@ -1,6 +1,7 @@
 ---
 title: "Chapter 1 · My EDA project"
 author: "Yi Qian"
+format: html
 date: today
 ---
 
