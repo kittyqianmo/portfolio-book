@@ -1,9 +1,0 @@
-[project]
-name = "chapters"
-
-[dependencies]
-ggplot2 = "*"
-janitor = "*"
-pheatmap = "*"
-pins = "*"
-rdatagouv = "*"
