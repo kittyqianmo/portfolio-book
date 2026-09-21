@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "My Data Science Portfolio",
     "section": "",
-    "text": "Welcome 👋\nThis is your data science portfolio. Over the semester it will grow from a single exploratory data analysis (EDA) project into a collection of reproducible analyses, each versioned with git, with dependencies pinned via renv/uv, and published to a URL on Posit Connect.\nThe chapters in this book are:",
+    "text": "Welcome 👋\nThis is Yi Qian’s portfolio on github. It contains my data analysis on several topics.",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>My Data Science Portfolio</span>"
     ]
@@ -14,17 +14,7 @@
     "href": "index.html#welcome",
     "title": "My Data Science Portfolio",
     "section": "",
-    "text": "Chapter 1, EDA project: your first real analysis, sourcing a dataset you care about by code from an open-data portal (data.gouv.fr, or your own country’s) and (optionally) pinning it with {pins}.\nChapters 2 & 3, later courses: placeholders that other instructors will fill in over the semester. Leave them in place.",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>My Data Science Portfolio</span>"
-    ]
-  },
-  {
-    "objectID": "index.html#how-to-use-this-scaffold",
-    "href": "index.html#how-to-use-this-scaffold",
-    "title": "My Data Science Portfolio",
-    "section": "How to use this scaffold",
-    "text": "How to use this scaffold\nThis folder is a starter book: copy it into your own workspace and make it yours. See README.md for the full walkthrough.\n\n# A tiny placeholder plot so the book renders before you add your own analysis.\nggplot(data.frame(x = rnorm(200), y = rnorm(200)), aes(x, y)) +\n  geom_point(alpha = 0.4, colour = \"#2E7D6B\") +\n  labs(x = \"your variable\", y = \"your other variable\")\n\n\n\n\n\n\n\nFigure 1: A first glimpse of your data. Replace this figure with your EDA output.\n\n\n\n\n\nThe book is language-agnostic: Chapter 1 uses R, but later chapters could just as easily use Python. What makes it reproducible is the pipeline around it: data sourced reproducibly, code that renders from source, dependencies pinned, everything under version control.",
+    "text": "Chapter 1: Data Anaysis on photovoltaic power generation dataset",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>My Data Science Portfolio</span>"
     ]
@@ -34,7 +24,7 @@
     "href": "chapters/01-EDA.html",
     "title": "Chapter 1 · My EDA project",
     "section": "",
-    "text": "The question\nwhat is the dominant factor to effect the potential of photovoltaic power generation?",
+    "text": "The question\nWhat is the dominant factor to effect the potential of photovoltaic power generation?",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Chapter 1 · My EDA project</span>"
     ]
