@@ -1,0 +1,84 @@
+<!DOCTYPE html><html><head><title>R: Update uvr (R package + CLI binary)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+<script>
+const macros = { "\\R": "\\textsf{R}", "\\mbox": "\\text", "\\code": "\\texttt"};
+function processMathHTML() {
+    var l = document.getElementsByClassName('reqn');
+    for (let e of l) { katex.render(e.textContent, e, { throwOnError: false, macros }); }
+    return;
+}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
+    onload="processMathHTML();"></script>
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body><div class="container"><main>
+
+<table style="width: 100%;"><tr><td>update_uvr {uvr}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Update uvr (R package + CLI binary)</h2>
+
+<h3>Description</h3>
+
+<p>Convenience helper that updates both the <code>uvr</code> R companion package
+(from GitHub) and the underlying <code>uvr</code> CLI binary in one call. The
+two components are released together, and forgetting to update one after
+the other is a common source of version-skew bugs.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre><code class='language-R'>update_uvr(ref = "HEAD", method = "auto", quiet = FALSE)
+</code></pre>
+
+
+<h3>Arguments</h3>
+
+<table role = "presentation">
+<tr><td><code id="ref">ref</code></td>
+<td>
+<p>Git ref (branch, tag, commit SHA) to install the R package from.
+Defaults to the default branch (<code>"HEAD"</code>).</p>
+</td></tr>
+<tr><td><code id="method">method</code></td>
+<td>
+<p>Binary install method. See <code><a href="../../uvr/help/install_uvr.html">install_uvr</a></code> for the
+full set; defaults to <code>"auto"</code> (pre-built binary when available,
+cargo build otherwise).</p>
+</td></tr>
+<tr><td><code id="quiet">quiet</code></td>
+<td>
+<p>If <code>TRUE</code>, suppress progress messages.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The function does <em>not</em> automatically restart your R session. After it
+completes, run <code>rstudioapi::restartSession()</code> (RStudio / Positron), or
+simply restart R to load the newly installed package.
+</p>
+
+
+<h3>Value</h3>
+
+<p>Invisible named list with <code>r_package</code> (installed version or <code>NA</code>
+on failure) and <code>binary</code> (path to the CLI binary).
+</p>
+
+
+<h3>Examples</h3>
+
+<pre><code class='language-R'>## Not run: 
+update_uvr()
+# then restart R to pick up the new package
+
+## End(Not run)
+</code></pre>
+
+<hr><div style="text-align: center;">[Package <em>uvr</em> version 0.1.2 <a href="00Index.html">Index</a>]</div></main>
+
+</div>
+</body></html>

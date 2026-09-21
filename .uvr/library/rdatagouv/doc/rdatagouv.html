@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Aymeric Stamm">
+
+<title>Finding, judging and re-fetching French open data with rdatagouv</title>
+<style>
+
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+width: 0.8em;
+margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+}
+pre.numberSource { margin-left: 3em; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+</style>
+</head>
+
+<body>
+
+
+<header id="title-block-header">
+<h1 class="title">Finding, judging and re-fetching French open data with rdatagouv</h1>
+<p class="author">Aymeric Stamm</p>
+
+</header>
+
+
+<blockquote>
+<p>This vignette assumes you can reach the data.gouv.fr API. Code that touches the live API only runs when the vignette is rendered with <code>DATAGOUV_LIVE=1</code> set (as when building this site with pkgdown); it is skipped during <code>R CMD build</code>/<code>R CMD check</code> so those builds stay clean. The worked examples below show real output from a live render.</p>
+</blockquote>
+<p>The examples that hit the live API are marked <code>#| live: true</code>; they only run when the document is rendered with the <code>DATAGOUV_LIVE=1</code> environment variable set (the pkgdown site build sets it), and are skipped otherwise — in particular during <code>R CMD build</code>/<code>R CMD check</code>, which render this vignette in a subprocess where the usual <code>_R_CHECK_PACKAGE_NAME_</code> marker is <em>not</em> set and therefore cannot be relied on to suppress live code. In-memory examples run unconditionally:</p>
+<h2 id="the-problem-rdatagouv-solves">The problem rdatagouv solves</h2>
+<p><code>rdatagouv</code> is a small R client for the public API of <a href="https://www.data.gouv.fr">data.gouv.fr</a>, the French government’s open data platform. It was written with a specific user in mind: a student or a data scientist who wants to <em>find</em> a dataset that matches their interests, <em>judge</em> whether it is usable for analysis, <em>download</em> it, and later <em>re-fetch the exact same table</em> in a reproducible way.</p>
+<p>These four steps may sound trivial, but the platform makes each of them harder than it should be:</p>
+<ol type="1">
+<li><strong>Finding.</strong> Enumerating “all” published datasets means paging through tens of thousands of records. The catalog search is server-side and only matches titles and descriptions, which are free-form and often uninformative.</li>
+<li><strong>Judging.</strong> The tabular API provides no human-readable variable descriptions. The actual descriptions live in separate <em>schema</em> documents on <a href="https://schema.data.gouv.fr">schema.data.gouv.fr</a>; data.gouv.fr only attaches a pointer (<code>name</code> / <code>url</code>) to a resource. Without resolving that pointer, you cannot tell whether a column really means what you assume.</li>
+<li><strong>Downloading.</strong> Datasets come in many formats (CSV, Excel, ZIP, Parquet, JSON…), the declared format is not always accurate, and a “dataset” may contain several files.</li>
+<li><strong>Re-fetching.</strong> Catalog titles and even ordering change over time, so a script that reaches for a dataset “by title” is fragile. You want an address that always resolves to the same table.</li>
+</ol>
+<p><code>rdatagouv</code> addresses all four. Its functions are organised around that workflow:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 37%">
+<col style="width: 62%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Find / search the catalog</td>
+<td><code>dg_find_datasets()</code>, <code>dg_find_organization()</code>, <code>dg_find_topics()</code></td>
+</tr>
+<tr class="even">
+<td>Judge documented columns</td>
+<td><code>dg_schema()</code></td>
+</tr>
+<tr class="odd">
+<td>Download tabular resources</td>
+<td><code>dg_pull_dataset()</code></td>
+</tr>
+<tr class="even">
+<td>Inspect parsing problems</td>
+<td><code>dg_problems()</code></td>
+</tr>
+<tr class="odd">
+<td>Summarise table contents</td>
+<td><code>dg_summary()</code>, <code>dg_summarise()</code></td>
+</tr>
+<tr class="even">
+<td>Re-fetch a table reproducibly</td>
+<td><code>dg_refetch()</code></td>
+</tr>
+</tbody>
+</table>
+<p>The approach mirrors what several US cities propose (e.g. <a href="https://github.com/ropensci/nycOpenData"><code>nycOpenData</code></a> for New York), but tailored to the data.gouv.fr API.</p>
+<h2 id="finding-datasets">Finding datasets</h2>
+<p><code>dg_find_datasets()</code> returns a tibble with one row per dataset:</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rdatagouv)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>datasets <span class="ot">&lt;-</span> <span class="fu">dg_find_datasets</span>(<span class="at">n =</span> <span class="dv">20</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(datasets)</span></code></pre></div>
+</div>
+<p>The columns are chosen to help you decide, at a glance, whether a dataset is worth pulling:</p>
+<ul>
+<li><code>id</code> is the stable, unique identifier used to address the dataset later.</li>
+<li><code>n_resources</code> is the number of files the dataset contains.</li>
+<li><code>formats</code> lists the distinct file formats found among them.</li>
+<li><code>has_table</code> is <code>TRUE</code> when at least one resource can be parsed into a table by this package.</li>
+<li><code>has_schema</code> is <code>TRUE</code> when at least one resource declares a data schema, i.e. when per-variable documentation is available via <code>dg_schema()</code>.</li>
+</ul>
+<p>The search endpoint does not inline each dataset’s resources, so the resource-based columns <code>n_resources</code>, <code>formats</code>, <code>has_table</code> and <code>has_schema</code> are <code>NA</code> unless you opt in with <code>resources = TRUE</code> (which costs one extra request per dataset):</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cycle <span class="ot">&lt;-</span> <span class="fu">dg_find_datasets</span>(<span class="at">q =</span> <span class="st">&quot;vélo&quot;</span>, <span class="at">n =</span> <span class="dv">10</span>, <span class="at">resources =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cycle[, <span class="fu">c</span>(<span class="st">&quot;title&quot;</span>, <span class="st">&quot;n_resources&quot;</span>, <span class="st">&quot;has_table&quot;</span>, <span class="st">&quot;has_schema&quot;</span>)]</span></code></pre></div>
+</div>
+<p>The discovery catalog is <strong>restricted to data.gouv’s official tabular formats</strong> (<code>csv</code>, <code>csv.gz</code>, <code>xls</code>, <code>xlsx</code>, <code>parquet</code>), so every listed dataset is in principle openable as a table — <code>has_table</code> is almost always <code>TRUE</code>. This is a deliberate choice: JSON, TSV and TXT resources can still be parsed when you address them directly (see <code>dg_pull_dataset()</code>), but they are not guaranteed tabular and are left out of the catalog so that “the catalog” stays a reliable list of tables.</p>
+<h3 id="restricting-to-documented-datasets">Restricting to documented datasets</h3>
+<p>Because descriptions live in schemas and only a fraction of datasets declare one, <code>dg_schema()</code> only helps on a subset of the catalog. You can target that subset directly. v2 has no boolean “declares a schema” server-side filter, so <code>schema_only</code> filters client-side on <code>has_schema</code>, which needs the per-dataset resource fetch — so calling it forces <code>resources = TRUE</code> (with a message about the extra requests) and the filter just works:</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>documented <span class="ot">&lt;-</span> <span class="fu">dg_find_datasets</span>(<span class="at">schema_only =</span> <span class="cn">TRUE</span>, <span class="at">n =</span> <span class="dv">10</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>documented[, <span class="fu">c</span>(<span class="st">&quot;title&quot;</span>, <span class="st">&quot;has_schema&quot;</span>)]</span></code></pre></div>
+</div>
+<h3 id="restricting-to-specific-formats">Restricting to specific formats</h3>
+<p>You can narrow the catalog to datasets that carry a resource in a format of your choice with the <code>format</code> argument. This is especially useful to find lighter files (e.g. <code>parquet</code>) that download faster than their CSV twins:</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>parquet <span class="ot">&lt;-</span> <span class="fu">dg_find_datasets</span>(<span class="at">format =</span> <span class="st">&quot;parquet&quot;</span>, <span class="at">n =</span> <span class="dv">10</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>parquet[, <span class="fu">c</span>(<span class="st">&quot;title&quot;</span>, <span class="st">&quot;formats&quot;</span>)]</span></code></pre></div>
+</div>
+<p>Multiple formats can be requested at once; each is queried server-side and the results are combined.</p>
+<h3 id="finding-a-specific-organizations-datasets">Finding a specific organization’s datasets</h3>
+<p><code>dg_find_datasets(organization =)</code> can address a producer by its 24-hex id, its <code>name</code>, or its <code>slug</code>. <code>dg_find_organization()</code> lists the organizations known to data.gouv so you can discover which one you want and get its stable id:</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>orgs <span class="ot">&lt;-</span> <span class="fu">dg_find_organization</span>(<span class="at">q =</span> <span class="st">&quot;SNCF&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>orgs[, <span class="fu">c</span>(<span class="st">&quot;name&quot;</span>, <span class="st">&quot;slug&quot;</span>, <span class="st">&quot;datasets&quot;</span>)]</span></code></pre></div>
+</div>
+<p>The slug resolves to the same datasets as the corresponding id — pass either to <code>dg_find_datasets()</code>:</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>sncf <span class="ot">&lt;-</span> <span class="fu">dg_find_datasets</span>(<span class="at">organization =</span> <span class="st">&quot;sncf&quot;</span>, <span class="at">n =</span> <span class="dv">10</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>sncf[, <span class="fu">c</span>(<span class="st">&quot;title&quot;</span>, <span class="st">&quot;organization&quot;</span>)]</span></code></pre></div>
+</div>
+<h3 id="finding-datasets-grouped-under-a-theme">Finding datasets grouped under a theme</h3>
+<p>Beyond producers, data.gouv curates datasets into <em>themes</em> (topics) such as “Mobilité”, “Environnement” or “Énergie”. <code>dg_find_topics()</code> lists these themes — including how many elements each groups — so you can discover one and get its stable 24-hex id:</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>topics <span class="ot">&lt;-</span> <span class="fu">dg_find_topics</span>(<span class="at">q =</span> <span class="st">&quot;mobilité&quot;</span>, <span class="at">n =</span> <span class="dv">5</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>topics[, <span class="fu">c</span>(<span class="st">&quot;name&quot;</span>, <span class="st">&quot;n_elements&quot;</span>)]</span></code></pre></div>
+</div>
+<p>Pass a theme’s id to <code>dg_find_datasets(topic =)</code> to narrow a catalog search to datasets grouped under it (the same single-valued server-side filter that <code>organization</code>/<code>geozone</code> use; it takes a topic id, not a name/slug):</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mobility <span class="ot">&lt;-</span> <span class="fu">dg_find_datasets</span>(<span class="at">topic =</span> topics<span class="sc">$</span>id[<span class="dv">1</span>], <span class="at">n =</span> <span class="dv">10</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>mobility[, <span class="fu">c</span>(<span class="st">&quot;title&quot;</span>, <span class="st">&quot;organization&quot;</span>)]</span></code></pre></div>
+</div>
+<p>By default <code>dg_find_topics()</code> reports <code>n_elements</code> — the theme’s declared total element count (datasets, reuses, dataservices, …). To see how that total breaks down by kind, pass <code>elements = TRUE</code> (costing one extra request per topic); the <code>n_datasets</code>/<code>n_dataservices</code>/<code>n_reuses</code> columns are <code>NA</code> otherwise.</p>
+<h2 id="judging-whether-a-dataset-is-usable">Judging whether a dataset is usable</h2>
+<p>A quick way to judge a dataset before pulling it is <code>dg_glimpse()</code>. It takes a dataset id — or, like the other functions, a pulled table (its id is read automatically) — and returns a named list of the v2-inline metadata the fetch path does not surface directly: the dataset’s <code>quality</code> score and flags, its usage <code>metrics</code>, and its <code>context</code> (license, frequency, coverage, …):</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>glimpse <span class="ot">&lt;-</span> <span class="fu">dg_glimpse</span>(<span class="st">&quot;6a6be5976a05df136d48fb7a&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>glimpse<span class="sc">$</span>quality<span class="sc">$</span>score             <span class="co"># 0..1 quality score</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>glimpse<span class="sc">$</span>metrics<span class="sc">$</span>views             <span class="co"># how often the dataset is looked at</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>glimpse<span class="sc">$</span>context<span class="sc">$</span>license           <span class="co"># e.g. &quot;open&quot; / &quot;notspecified&quot;</span></span></code></pre></div>
+</div>
+<p>The judged usefulness of a dataset also hinges on whether the columns mean what you think they mean. That information comes from the producer’s <em>schema</em> on schema.data.gouv.fr. <code>dg_schema()</code> takes a table (its id is read automatically) or a composed table id and returns the documented fields:</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># schema_only filters client-side, so request a batch and take the first hit.</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>documented <span class="ot">&lt;-</span> <span class="fu">dg_find_datasets</span>(<span class="at">schema_only =</span> <span class="cn">TRUE</span>, <span class="at">n =</span> <span class="dv">100</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>table_id <span class="ot">&lt;-</span> documented<span class="sc">$</span>id[<span class="sc">!</span><span class="fu">is.na</span>(documented<span class="sc">$</span>id)][[<span class="dv">1</span>]]</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull it, then inspect the schema of the returned table.</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> <span class="fu">dg_pull_dataset</span>(table_id)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>schema <span class="ot">&lt;-</span> <span class="fu">dg_schema</span>(tbl)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Human-readable titles and descriptions of every column:</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(schema)</span></code></pre></div>
+</div>
+<p>The result is a tibble with one row per column and the columns <code>name</code>, <code>title</code>, <code>description</code>, <code>type</code> and <code>example</code>, together with the schema’s own <code>title</code> and <code>name</code> attached as attributes. Where the schema provides no title or description (some producers document only some fields), the corresponding cell is <code>NA</code>.</p>
+<p>If the resource carries no schema pointer, <code>dg_schema()</code> returns <code>NULL</code> with a message explaining that no variable documentation is available.</p>
+<h2 id="downloading-data">Downloading data</h2>
+<p><code>dg_pull_dataset()</code> downloads the first parseable tabular resource of a dataset and returns a <strong>single tibble</strong>:</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> <span class="fu">dg_pull_dataset</span>(<span class="st">&quot;6397c0ff56d3963118a18345&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tbl)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dg_table_id</span>(tbl)</span></code></pre></div>
+</div>
+<p>A few things to know about pulling:</p>
+<ul>
+<li>Supported formats are <code>csv</code>, <code>csv.gz</code>, <code>xls</code>, <code>xlsx</code>, <code>parquet</code>, <code>tsv</code>, <code>txt</code> and <code>json</code>. A <strong>ZIP</strong> resource is unpacked and its first parseable file is returned by default; <code>all_files = TRUE</code> keeps every contained file in one of these formats as a named list — one element per file.</li>
+<li>The delimiter of CSV/TXT resources is auto-detected (comma, semicolon, tab, pipe, …), so both standard and European-style files (semicolon / decimal-comma) are handled without configuration.</li>
+<li>Declared formats are not always accurate, and a candidate may fail to parse (e.g. a <code>json</code> resource that actually serves an API metadata document). <code>dg_pull_dataset()</code> skips non-parseable resources and falls back to the next tabular one instead of erroring.</li>
+<li>When a dataset offers the <em>same table</em> in several formats (same file name, different extension, e.g. <code>data.csv</code> vs <code>data.xlsx</code>), the lightest advertised file is downloaded so the pull is as small as possible; resources with distinct names keep their declared order.</li>
+<li>Every returned table carries its stable, unique address as an <code>id</code> attribute, readable with <code>dg_table_id()</code>.</li>
+<li>Column types are seeded from data.gouv’s own <code>csv-detective</code> profile by default (<code>use_tabular_types = TRUE</code>), then remaining inference is left to vroom. The profile is best-effort — it only exists for single-file resources indexed by the tabular service, so a missing profile (or a ZIP member) falls back to type inference; pass <code>use_tabular_types = FALSE</code> to disable seeding entirely. You can always force specific columns with <code>col_types = c(col_name = &quot;Date&quot;)</code> (shorthand: <code>&quot;character&quot;</code>, <code>&quot;double&quot;</code>/<code>&quot;numeric&quot;</code>, <code>&quot;integer&quot;</code>, <code>&quot;logical&quot;</code>, <code>&quot;Date&quot;</code>, <code>&quot;datetime&quot;</code>, <code>&quot;skip&quot;</code>, <code>&quot;guess&quot;</code>; explicit <code>col_types</code> always win). This is handy when vroom guesses a type the data does not fully match — e.g. a mostly-padded ISO date column with a few non-padded stragglers like <code>2021-7-01</code>, which vroom would otherwise flag as a parsing issue; forcing <code>&quot;Date&quot;</code> turns those stragglers into <code>NA</code>.</li>
+<li>Any parsing issues vroom encountered are attached to the table as an <code>rdatagouv_problems</code> attribute instead of a noisy per-cell warning. Read them with <code>dg_problems(tbl)</code> (a data frame of <code>row</code>, <code>col</code>, <code>expected</code>, <code>actual</code>, or <code>NULL</code> when the table parsed cleanly).</li>
+</ul>
+<h2 id="when-pulling-goes-wrong-parsing-issues">When pulling goes wrong: parsing issues</h2>
+<p>A table is <em>pulled</em> by guessing how each column should be read — its type (integer, double, date, …) is inferred from the values it contains. Real-world open data rarely cooperates perfectly: a column can hold mixed content, and the guess can be wrong. This section explains how <code>rdatagouv</code> surfaces those problems and how you can fix them.</p>
+<h3 id="detecting-a-parsing-problem">Detecting a parsing problem</h3>
+<p>While it reads a delimited file, vroom reports every cell it cannot reconcile with the column type it committed to. Rather than blasting these one-by-one as warnings, <code>rdatagouv</code> silences the noisy per-cell messages and keeps the underlying record on the table, readable with <code>dg_problems()</code>:</p>
+<div class="cell" data-dg="dg_problems">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In-memory demo of the problems attribute. A real pull works the same way:</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   tbl &lt;- dg_pull_dataset(&quot;&lt;id&gt;&quot;)</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   dg_problems(tbl)</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">try</span>({</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># A column declared &quot;double&quot; but holding some non-numeric cells.</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  csv <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.csv&quot;</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">writeLines</span>(<span class="fu">c</span>(<span class="st">&quot;x,y&quot;</span>, <span class="st">&quot;1,2&quot;</span>, <span class="st">&quot;2,oops&quot;</span>, <span class="st">&quot;3,4&quot;</span>), csv)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  pr <span class="ot">&lt;-</span> vroom<span class="sc">::</span><span class="fu">problems</span>(vroom<span class="sc">::</span><span class="fu">vroom</span>(csv, <span class="at">col_types =</span> vroom<span class="sc">::</span><span class="fu">cols</span>(</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;d&quot;</span>, <span class="at">y =</span> <span class="st">&quot;d&quot;</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  )))</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  pr[, <span class="fu">c</span>(<span class="st">&quot;row&quot;</span>, <span class="st">&quot;col&quot;</span>, <span class="st">&quot;expected&quot;</span>, <span class="st">&quot;actual&quot;</span>)]</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+</div>
+<p>A <em>clean</em> pull — one where every cell matched its inferred type — returns <code>NULL</code> from <code>dg_problems()</code>; a table with issues returns a data frame with one row per problem and the columns <code>row</code>, <code>col</code>, <code>expected</code> and <code>actual</code>:</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Column</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>row</code></td>
+<td>1-based row (of the file) where the problem occurred</td>
+</tr>
+<tr class="even">
+<td><code>col</code></td>
+<td>column name (or number) that could not be parsed</td>
+</tr>
+<tr class="odd">
+<td><code>expected</code></td>
+<td>the type vroom had committed to (e.g. <code>a double</code>)</td>
+</tr>
+<tr class="even">
+<td><code>actual</code></td>
+<td>the raw value that failed, e.g. <code>oops</code></td>
+</tr>
+</tbody>
+</table>
+<p>The attribute is only attached when there is something to report, so a healthy table stays lightweight and ordinary data frames (not produced by a pull) return <code>NULL</code>.</p>
+<h3 id="a-common-trigger-mostly-padded-iso-dates">A common trigger: mostly-padded ISO dates</h3>
+<p>A frequent real-world case is a date column such as <code>2021-07-01</code> that is <em>padded</em> (two-digit month/day) for almost every row, with a few non-padded stragglers like <code>2021-7-01</code> or <code>2024-11-5</code>. vroom sees mostly-padded ISO dates, commits to a <code>Date</code> collector, and flags each straggler as a parsing issue. The stragglers parse to <code>NA</code> and the warning count is often large — the trigger that motivated this feature. This is a <em>data</em> quality issue, not a bug in the pull.</p>
+<h3 id="solving-it-forcing-column-types">Solving it: forcing column types</h3>
+<p>You can take control of the guess with <code>col_types</code>, which overrides vroom’s inference for the named columns (shorthand: <code>&quot;character&quot;</code>, <code>&quot;double&quot;</code>/ <code>&quot;numeric&quot;</code>, <code>&quot;integer&quot;</code>, <code>&quot;logical&quot;</code>, <code>&quot;Date&quot;</code>, <code>&quot;datetime&quot;</code>, <code>&quot;skip&quot;</code>, <code>&quot;guess&quot;</code>). Two ways to fix the mixed-date case:</p>
+<ol type="1">
+<li><p><strong>Force the stragglers to text</strong> with <code>&quot;character&quot;</code> — nothing is lost and no value becomes <code>NA</code>; you can parse the dates yourself afterwards. The IRVE charging-points dataset is a good real example: its <code>date_mise_en_service</code> and <code>date_maj</code> columns are mostly padded with a few stragglers like <code>2021-7-01</code>:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> <span class="fu">dg_pull_dataset</span>(<span class="st">&quot;5448d3e0c751df01f85d0572&quot;</span>,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_types =</span> <span class="fu">c</span>(<span class="at">date_mise_en_service =</span> <span class="st">&quot;character&quot;</span>, <span class="at">date_maj =</span> <span class="st">&quot;character&quot;</span>))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dg_problems</span>(tbl)          <span class="co"># NULL — nothing is flagged any more</span></span></code></pre></div></li>
+<li><p><strong>Force <code>&quot;Date&quot;</code></strong> and accept that the stragglers become <code>NA</code> — right when a few unparsed dates are acceptable for your analysis:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> <span class="fu">dg_refetch</span>(tbl,</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_types =</span> <span class="fu">c</span>(<span class="at">date_mise_en_service =</span> <span class="st">&quot;Date&quot;</span>, <span class="at">date_maj =</span> <span class="st">&quot;Date&quot;</span>))</span></code></pre></div></li>
+</ol>
+<p>Both <code>dg_pull_dataset()</code> and <code>dg_refetch()</code> accept <code>col_types</code> (including inside a ZIP with <code>all_files = TRUE</code>), so you can correct the same table every time you re-fetch it:</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull the IRVE charging-points table once, inspect its parsing issues with</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># dg_problems(), then re-fetch the same table with the mixed-date columns</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># forced to text so nothing is flagged.</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> <span class="fu">dg_pull_dataset</span>(<span class="st">&quot;5448d3e0c751df01f85d0572&quot;</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(<span class="fu">dg_problems</span>(tbl))                    <span class="co"># how many mixed-date stragglers</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> <span class="fu">dg_refetch</span>(tbl,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_types =</span> <span class="fu">c</span>(<span class="at">date_mise_en_service =</span> <span class="st">&quot;character&quot;</span>, <span class="at">date_maj =</span> <span class="st">&quot;character&quot;</span>))</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dg_problems</span>(tbl)                          <span class="co"># NULL — clean re-fetch</span></span></code></pre></div>
+</div>
+<p>The general workflow is: pull, inspect with <code>dg_problems()</code>, spot the offending column in <code>col</code>, choose a <code>col_types</code> entry that matches how you intend to use the data, and re-pull or re-fetch. If the problem is a non-numeric value inside a numeric column, forcing <code>&quot;character&quot;</code> keeps the raw text; forcing <code>&quot;double&quot;</code> turns it into <code>NA</code>. Either choice lets you move on with a table whose columns behave predictably.</p>
+<h2 id="re-fetching-the-same-table-reproducibly">Re-fetching the same table reproducibly</h2>
+<p>This is what makes your analysis reproducible over time. The table’s id is a URI built from the platform’s own stable identifiers — <code>https://www.data.gouv.fr/datasets/&lt;dataset_id&gt;#&lt;resource_id&gt;</code> (plus <code>/&lt;file&gt;</code> for a file inside a ZIP). Unlike a human-readable title, this address always resolves to the same table:</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> <span class="fu">dg_pull_dataset</span>(<span class="st">&quot;6397c0ff56d3963118a18345&quot;</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>table_id <span class="ot">&lt;-</span> <span class="fu">dg_table_id</span>(tbl)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>table_id</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Re-fetch the exact same table later:</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>again <span class="ot">&lt;-</span> <span class="fu">dg_refetch</span>(tbl)</span></code></pre></div>
+</div>
+<p><code>dg_refetch()</code> accepts the table id (URI) directly, so you can store it in a script or a database and reproduce the pull without re-searching the catalog.</p>
+<h3 id="why-a-stable-id-beats-a-file-name">Why a stable id beats a file name</h3>
+<p>Datasets on data.gouv are <em>living</em>: producers re-upload files, correct typos, and re-run pipelines. The file a human-readable name or title points at can therefore change between the day you pull it and the day you re-run your analysis. The table id, by contrast, is a stable address built from the platform’s own identifiers, and <code>dg_refetch()</code> uses it to get back <strong>the same table you fetched originally</strong> — not whatever the resource happens to contain today.</p>
+<p>To make this concrete with no network, imagine a producer’s <code>bikes.csv</code> that you pulled last month, and the slightly updated file they publish today:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In-memory illustration of resource drift — no network, no rdatagouv calls.</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The file you pulled on day one.</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>pulled_last_month <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">city =</span> <span class="fu">c</span>(<span class="st">&quot;Caen&quot;</span>, <span class="st">&quot;Lyon&quot;</span>), <span class="at">bikes =</span> <span class="fu">c</span>(<span class="dv">42</span>L, <span class="dv">17</span>L))</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># The same-named file, re-uploaded by the producer the next month.</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>published_today <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">city =</span> <span class="fu">c</span>(<span class="st">&quot;Caen&quot;</span>, <span class="st">&quot;Lyon&quot;</span>), <span class="at">bikes =</span> <span class="fu">c</span>(<span class="dv">43</span>L, <span class="dv">18</span>L))</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># A lookup by file name gives you whatever is current now (drifted):</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>name_based <span class="ot">&lt;-</span> published_today</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co"># A lookup by the stable id saved at pull time gives you the table you</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="co"># actually analysed. In a real session that is exactly what happens:</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co">#   saved_id &lt;- dg_table_id(pulled)   # a stable URI, e.g.</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co">#   # `https://www.data.gouv.fr/datasets/&lt;id&gt;#&lt;resource&gt;`</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="co">#   back &lt;- dg_refetch(saved_id)      # -&gt; pulled_last_month, not published_today</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>id_based <span class="ot">&lt;-</span> pulled_last_month</span></code></pre></div>
+</div>
+<p>The table id is what makes your analysis reproducible over time: save it alongside your results, and the pull you ran is the pull a future <code>dg_refetch()</code> gets back — even if the file name, its contents, or the surrounding catalog have drifted in the meantime. A file name captures only <em>where something is now</em>; the stable id captures <em>what you actually observed</em>.</p>
+<h2 id="summarising-datasets">Summarising datasets</h2>
+<p><code>dg_summary()</code> computes metrics for a single table:</p>
+<div class="cell" data-dg="dg_summary">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The call is wrapped in try() as a low-level backstop: neither knitr&#39;s</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># `error: true` option nor the DATAGOUV_LIVE/get() gate can contain a</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co"># present-but-unforceable lazy-load export (the Windows/R-devel failure,</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># see AGENTS.md), whereas try() degrades even that hard failure to printed</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># output instead of aborting R CMD build/check.</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">try</span>(<span class="fu">dg_summary</span>(iris, <span class="at">name =</span> <span class="st">&quot;iris&quot;</span>))</span></code></pre></div>
+</div>
+<p>The reported columns are <code>dataset</code> (a label), <code>size_kb</code> (in-memory weight), <code>n_vars</code>, <code>n_numeric</code>, <code>n_non_numeric</code>, <code>n_rows</code> and <code>prop_missing</code> (the proportion of missing values). A table’s id is carried as an attribute, not a column, so it never inflates these metrics.</p>
+<p><code>dg_summarise()</code> applies <code>dg_summary()</code> to a collection of tables. It is flexible about its input, accepting:</p>
+<ul>
+<li>a named list of tibbles (each element is a single table),</li>
+<li>a named list of such lists, as returned by <code>dg_pull_dataset(all_files = TRUE)</code> (a ZIP may contribute several tables),</li>
+<li>a tibble from <code>dg_find_datasets()</code> (each dataset is downloaded and summarised),</li>
+<li>a character vector of identifiers (or exact titles),</li>
+<li>or <code>NULL</code> to download and summarise the first <code>n</code> datasets of the catalog.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In-memory tables — no network needed</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| dg: dg_summarise</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| error: true</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">try</span>(<span class="fu">dg_summarise</span>(<span class="at">datasets =</span> <span class="fu">list</span>(<span class="at">iris =</span> iris, <span class="at">mtcars =</span> mtcars)))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 7
+  dataset size_kb n_vars n_numeric n_non_numeric n_rows prop_missing
+* &lt;chr&gt;     &lt;dbl&gt;  &lt;int&gt;     &lt;int&gt;         &lt;int&gt;  &lt;int&gt;        &lt;dbl&gt;
+1 iris       7.09      5         4             1    150            0
+2 mtcars     7.04     11        11             0     32            0</code></pre>
+</div>
+</div>
+<h2 id="a-complete-workflow">A complete workflow</h2>
+<p>Because every step returns something the next one can consume, the whole “find → judge → fetch” pipeline can be written as a single pipe. See how the table flows from one step to the next without any intermediate variables:</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find a dataset, take its first id, pull it into a table and read its schema.</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dg_find_datasets</span>(<span class="at">q =</span> <span class="st">&quot;recharge électrique&quot;</span>, <span class="at">schema_only =</span> <span class="cn">TRUE</span>, <span class="at">n =</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(id) <span class="sc">|&gt;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dg_pull_dataset</span>() <span class="sc">|&gt;</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dg_schema</span>()</span></code></pre></div>
+</div>
+<p><code>dg_pull_dataset()</code> always returns a single tibble (a ZIP yields its first parseable file), so the pipe keeps flowing whether or not the dataset is an archive — <code>dg_schema()</code> and <code>dg_refetch()</code> read the table’s stable id from its attribute automatically. The same id lets you reproduce the exact table later in a fresh session, no matter how the catalog changes in the meantime:</p>
+<div class="cell" data-live="true">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> <span class="fu">dg_find_datasets</span>(<span class="at">q =</span> <span class="st">&quot;recharge électrique&quot;</span>, <span class="at">schema_only =</span> <span class="cn">TRUE</span>, <span class="at">n =</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(id) <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dg_pull_dataset</span>()</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the stable address, then re-fetch the exact same table later.</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>tbl_id <span class="ot">&lt;-</span> <span class="fu">dg_table_id</span>(tbl)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>again <span class="ot">&lt;-</span> <span class="fu">dg_refetch</span>(tbl_id)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(again, tbl)</span></code></pre></div>
+</div>
+<p>The table id is the key to reproducibility: save <code>tbl_id</code>, and <code>dg_refetch(tbl_id)</code> returns the same table again, regardless of filename reorganisation or later edits to the dataset on the platform.</p>
+
+
+
+
+
+</body></html>

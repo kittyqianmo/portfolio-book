@@ -1,0 +1,15 @@
+dg_find_datasets        Find datasets available on data.gouv.fr
+dg_find_organization    Search for organizations (data producers) on
+                        data.gouv.fr
+dg_find_topics          Find topics (themes) on data.gouv.fr
+dg_glimpse              Glimpse the metadata of a dataset on
+                        data.gouv.fr
+dg_problems             Return the parsing problems of a downloaded
+                        table
+dg_pull_dataset         Download a dataset from data.gouv.fr
+dg_refetch              Re-fetch a single parsed table by its stable
+                        address
+dg_schema               Documented schema of a parsed table's columns
+dg_summarise            Summarise several datasets
+dg_summary              Compute summary metrics for a dataset
+dg_table_id             Read a table's stable address

@@ -1,0 +1,11 @@
+uvr-package	uvr-package
+add	add
+init	init
+install_uvr	install_uvr
+lock	lock
+remove_pkgs	remove_pkgs
+run	run
+sync	sync
+update_pkgs	update_pkgs
+update_uvr	update_uvr
+uvr	uvr-package

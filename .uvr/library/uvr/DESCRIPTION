@@ -1,0 +1,36 @@
+Package: uvr
+Title: R Interface to the 'uvr' Package Manager
+Version: 0.1.5
+Authors@R: c(
+    person("Francesco", "Vallania", role = c("aut", "cre"), email = "nbafrank@gmail.com"),
+    person("Brayden", "Nilson", role = "aut", email = "nilson.brayden@gmail.com"))
+Description: Provides R functions that wrap the 'uvr' command-line tool for
+    fast, reproducible R package management. Functions include project
+    initialization, package addition and removal, lockfile synchronization,
+    and script execution within isolated environments. Requires the 'uvr'
+    binary to be installed separately.
+License: MIT + file LICENSE
+Depends: R (>= 4.1.0)
+Imports: processx, withr
+Suggests: covr, curl, jsonlite, pak, remotes, testthat (>= 3.3.0)
+Config/testthat/edition: 3
+Encoding: UTF-8
+Config/roxygen2/version: 8.1.0
+SystemRequirements: uvr (>= 0.4.6)
+RemoteType: github
+RemoteHost: api.github.com
+RemoteRepo: uvr-r
+RemoteUsername: nbafrank
+RemotePkgRef: nbafrank/uvr-r
+RemoteRef: HEAD
+RemoteSha: 41284fa6d45057b8b2949a252933d227eec4fd1d
+GithubRepo: uvr-r
+GithubUsername: nbafrank
+GithubRef: HEAD
+GithubSHA1: 41284fa6d45057b8b2949a252933d227eec4fd1d
+NeedsCompilation: no
+Packaged: 2026-09-10 12:48:59 UTC; kittyqianmo
+Author: Francesco Vallania [aut, cre],
+  Brayden Nilson [aut]
+Maintainer: Francesco Vallania <nbafrank@gmail.com>
+Built: R 4.5.2; ; 2026-09-10 12:49:00 UTC; unix

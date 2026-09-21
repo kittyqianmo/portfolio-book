@@ -1,0 +1,70 @@
+Package: rdatagouv
+Title: Tools to Download and Explore Datasets from Data.gouv.fr
+Version: 0.1.0
+Authors@R: c( 
+    person(given = "Magali", 
+           family = "Berland", 
+           role = "aut", 
+           email = "magali.berland@inrae.fr"),
+    person(given = "Pierre", 
+           family = "Gloaguen", 
+           role = "aut", 
+           email = "pierre.gloaguen@univ-ubs.fr"), 
+    person(given = "Arthur", 
+           family = "Leroy", 
+           role = "aut", 
+           email = "arthur.leroy@inrae.fr"), 
+    person(given = "Mahendra", 
+           family = "Mariadassou", 
+           role = "aut", 
+           email = "mahendra.mariadassou@inrae.fr"),
+    person(given = "Cédric", 
+           family = "Midoux", 
+           role = "aut", 
+           email = "cedric.midoux@inrae.fr"), 
+    person(given = "Jean-François", 
+           family = "Rey", 
+           role = "aut", 
+           email = "jean-francois.rey@inrae.fr"), 
+    person(given = "Aymeric",
+           family = "Stamm",
+           role = c("aut", "cre"), 
+           email = "aymeric.stamm@cnrs.fr",
+           comment = c(ORCID = "0000-0002-8725-3654")))
+Description: Provides a client for the public API of data.gouv.fr, the French
+    government's open data platform. It helps you find a dataset that matches
+    your interests, judge whether it is usable, download it, and re-fetch the
+    exact same table later in a reproducible way. You can search the catalog
+    and filter by producer or theme (dg_find_datasets(), dg_find_organization(),
+    dg_find_topics()), pull a dataset's tabular resources into tidy tibbles
+    (dg_pull_dataset()), inspect the documented variables of its data schema
+    (dg_schema()), and compute summary metrics such as size, number of columns
+    and missing-value rate (dg_summary(), dg_summarise()). Each returned table
+    carries a stable identifier (dg_table_id(), dg_refetch()) so it can be
+    re-fetched later. Requests are built on top of 'httr2'.
+License: MIT + file LICENSE
+URL: https://astamm.github.io/rdatagouv/,
+        https://github.com/astamm/rdatagouv
+BugReports: https://github.com/astamm/rdatagouv/issues
+Encoding: UTF-8
+VignetteBuilder: quarto
+Config/Quarto/version: >= 1.4
+Imports: cli, httr2, jsonlite, nanoparquet, readxl, tibble, vroom
+Suggests: dplyr, gt, knitr, pkgdown, quarto, testthat (>= 3.0.0),
+        withr, writexl
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.0
+NeedsCompilation: no
+Packaged: 2026-09-03 11:05:38 UTC; stamm-a
+Author: Magali Berland [aut],
+  Pierre Gloaguen [aut],
+  Arthur Leroy [aut],
+  Mahendra Mariadassou [aut],
+  Cédric Midoux [aut],
+  Jean-François Rey [aut],
+  Aymeric Stamm [aut, cre] (ORCID:
+    <https://orcid.org/0000-0002-8725-3654>)
+Maintainer: Aymeric Stamm <aymeric.stamm@cnrs.fr>
+Repository: CRAN
+Date/Publication: 2026-09-12 14:20:02 UTC
+Built: R 4.5.2; ; 2026-09-21 13:44:48 UTC; unix

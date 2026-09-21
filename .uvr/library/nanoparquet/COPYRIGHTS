@@ -1,0 +1,72 @@
+# nanoparquet
+
+(c) 2019-2024 Hannes Mühleisen as miniparquet
+(c) 2024 Posit Software, PBC (formerly RStudio)
+
+# Except for the following parts
+
+## Snappy
+
+In `/src/snappy`.
+
+(c) Google Inc.
+
+## Thrift
+
+In `src/thrift`.
+
+(c) Apache Software Foundation
+
+## Flatbuffers
+
+In `src/flatbuffers`.
+
+(c) Google Inc.
+
+## Arrow flatbuffer schemas
+
+`/src/flatbuffers/*.fbs`.
+
+(c) Apache Software Foundation
+
+## Parquet Thrift schema
+
+`tools/parquet.thrift`.
+
+(c) Apache Software Foundation
+
+## `src/miniz/miniz_wrapper.hpp` from DuckDB
+
+(c) Hannes Mühleisen
+(c) Mark Mytherin
+
+## Miniz
+
+`/src/miniz`.
+
+(c) 2013-2014 RAD Game Tools and Valve Software
+(c) 2010-2014 Rich Geldreich and Tenacious Software LLC
+
+## Zstd
+
+`src/zstd`
+
+(c) 2016-present Facebook, Inc.
+
+## FastPFor
+
+`src/fastpforlib`
+
+Daniel Lemire
+Leonid Boytsov
+Owen Kaser
+Maxime Caron
+Louis Dionne
+Michel Lemay
+Erik Kruus
+Andrea Bedini
+Matthias Petri
+Robson Braga Araujo
+Patrick Damme
+Xiening Dai
+Pavel Pavlov

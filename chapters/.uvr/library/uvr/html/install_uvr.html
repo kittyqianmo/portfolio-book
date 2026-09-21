@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><title>R: Install the uvr binary</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+<script>
+const macros = { "\\R": "\\textsf{R}", "\\mbox": "\\text", "\\code": "\\texttt"};
+function processMathHTML() {
+    var l = document.getElementsByClassName('reqn');
+    for (let e of l) { katex.render(e.textContent, e, { throwOnError: false, macros }); }
+    return;
+}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
+    onload="processMathHTML();"></script>
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body><div class="container"><main>
+
+<table style="width: 100%;"><tr><td>install_uvr {uvr}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Install the uvr binary</h2>
+
+<h3>Description</h3>
+
+<p>Downloads and installs the <code>uvr</code> binary. By default, tries to download
+a pre-built binary from GitHub releases. If none is available for the
+current platform, falls back to building from source via <code>cargo install</code>
+(requires the Rust toolchain).
+</p>
+
+
+<h3>Usage</h3>
+
+<pre><code class='language-R'>install_uvr(method = c("auto", "binary", "cargo"), force = FALSE)
+</code></pre>
+
+
+<h3>Arguments</h3>
+
+<table role = "presentation">
+<tr><td><code id="method">method</code></td>
+<td>
+<p>Installation method: <code>"auto"</code> (default) tries a pre-built
+GitHub release binary first, then falls back to building from source via
+<code>cargo install</code>. <code>"binary"</code> downloads a pre-built binary only.
+<code>"cargo"</code> builds from source only.</p>
+</td></tr>
+<tr><td><code id="force">force</code></td>
+<td>
+<p>If <code>TRUE</code>, reinstall even if uvr is already present.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>Invisible path to the installed binary.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre><code class='language-R'>## Not run: 
+# Auto-detect best method
+install_uvr()
+
+# Force rebuild from source
+install_uvr(method = "cargo", force = TRUE)
+
+## End(Not run)
+</code></pre>
+
+<hr><div style="text-align: center;">[Package <em>uvr</em> version 0.1.2 <a href="00Index.html">Index</a>]</div></main>
+
+</div>
+</body></html>

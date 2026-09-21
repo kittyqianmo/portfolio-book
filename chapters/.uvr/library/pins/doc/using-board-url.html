@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Using web-hosted boards</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Using web-hosted boards</h1>
+
+
+
+<p>The pins package supports back-and-forth collaboration for publishing
+and consuming using, for example, <code>board_s3()</code>. The goal of
+this vignette is to show how to publish a board of pins to a website,
+bringing your pins to a wider audience. How does this work?</p>
+<ul>
+<li>For consumers, <code>board_url()</code> offers
+<strong>read-only</strong> collaboration.</li>
+<li>For publishers, a helper function is provided,
+<code>write_board_manifest()</code>. A manifest contains a list of pins
+and versions, enabling a <code>board_url()</code> to read like a
+<code>board_s3()</code> or <code>board_folder()</code>.</li>
+</ul>
+<div id="publishing" class="section level2">
+<h2>Publishing</h2>
+<p>The steps for publishing a board that can be read by consumers using
+<code>board_url()</code> are:</p>
+<ul>
+<li>create a board,</li>
+<li>write pins to the board,</li>
+<li>write a manifest file using <code>write_board_manifest()</code>,
+and</li>
+<li>publish your website.</li>
+</ul>
+<p>The first and last steps will be specific to how you deploy your
+board on the web; we discuss options in the <a href="#publishing-platforms">Publishing platforms</a> section.
+Regardless of platform, you’ll write the pins and the manifest the same
+way.</p>
+<p>For this first demonstration, we’ll start by creating a board, and
+finish by showing how the board works after being served.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(pins)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>board <span class="ot">&lt;-</span> <span class="fu">board_temp</span>(<span class="at">versioned =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>We’re using a temporary board for this demonstration, but in
+practice, you might use <code>board_folder()</code> in a project folder
+or GitHub repo, or perhaps <code>board_s3()</code>.</p>
+<p>Let’s make the <code>mtcars</code> dataset available as a JSON
+file:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>board <span class="sc">|&gt;</span> <span class="fu">pin_write</span>(mtcars, <span class="at">type =</span> <span class="st">&quot;json&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt; Using `name = &#39;mtcars&#39;`</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; Creating new version &#39;20260309T132705Z-c4fcd&#39;</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; Writing to pin &#39;mtcars&#39;</span></span></code></pre></div>
+<p>Let’s make a new version of this data by adding a column:
+<code>lper100km</code>, consumption in liters per 100 km. This could
+make our data friendlier to folks outside the United States.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>mtcars_metric <span class="ot">&lt;-</span> mtcars</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>mtcars_metric<span class="sc">$</span>lper100km <span class="ot">&lt;-</span> <span class="fl">235.215</span> <span class="sc">/</span> mtcars<span class="sc">$</span>mpg</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>board <span class="sc">|&gt;</span> <span class="fu">pin_write</span>(mtcars_metric, <span class="at">name =</span> <span class="st">&quot;mtcars&quot;</span>, <span class="at">type =</span> <span class="st">&quot;json&quot;</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; Creating new version &#39;20260309T132708Z-19d36&#39;</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; Writing to pin &#39;mtcars&#39;</span></span></code></pre></div>
+<p>Let’s check our board to ensure we have one pin named
+<code>&quot;mtcars&quot;</code>, with two versions:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>board <span class="sc">|&gt;</span> <span class="fu">pin_list</span>()</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;mtcars&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>board <span class="sc">|&gt;</span> <span class="fu">pin_versions</span>(<span class="st">&quot;mtcars&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 3</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt;   version                created             hash </span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                  &lt;dttm&gt;              &lt;chr&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; 1 20260309T132705Z-c4fcd 2026-03-09 07:27:05 c4fcd</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; 2 20260309T132708Z-19d36 2026-03-09 07:27:08 19d36</span></span></code></pre></div>
+<p>Because a <code>board_url()</code> is consumed over the web, it
+doesn’t have access to a file system the way, for example, a
+<code>board_folder()</code> has; we can work around this by creating a
+manifest file. When a <code>board_url()</code> is set up by a consumer
+for reading, the pins package uses this file to discover the pins and
+their versions. The manifest file is the key to
+<code>board_url()</code>’s ability to discover pins as if it were a
+file-system-based board.</p>
+<p>After writing pins but <em>before</em> publishing, call
+<code>write_board_manifest()</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>board <span class="sc">|&gt;</span> <span class="fu">write_board_manifest</span>()</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt; Manifest file written to root folder of board, as `_pins.yaml`</span></span></code></pre></div>
+<p>The maintenance of this manifest file is not automated; it is your
+responsibility as the board publisher to keep the manifest up to
+date.</p>
+<p>Let’s confirm that there is a file called
+<code>_pins.yaml</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>withr<span class="sc">::</span><span class="fu">with_dir</span>(board<span class="sc">$</span>path, fs<span class="sc">::</span><span class="fu">dir_ls</span>())</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt; _pins.yaml mtcars</span></span></code></pre></div>
+<p>We can inspect its contents to see each pin in the board, and each
+version of each pin:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">mtcars</span><span class="kw">:</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="kw">-</span><span class="at"> mtcars/20260309T132705Z-c4fcd/</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="kw">-</span><span class="at"> mtcars/20260309T132708Z-19d36/</span></span></code></pre></div>
+<p>At this point, we would publish the folder containing the board as a
+part of a web site. Let’s pretend that we have served the folder from
+our fake website, <code>https://not.real.website.co/pins/</code>.</p>
+</div>
+<div id="consuming" class="section level2">
+<h2>Consuming</h2>
+<p>With an up-to-date manifest file, a <code>board_url()</code> can
+behave as a read-only version of a <code>board_folder()</code>. Let’s
+create a <code>board_url()</code> using our fake URL:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>web_board <span class="ot">&lt;-</span> <span class="fu">board_url</span>(<span class="st">&quot;https://not.real.website.co/pins/&quot;</span>)</span></code></pre></div>
+<p>The <code>board_url()</code> function reads the manifest file to
+discover the pins and versions:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>web_board <span class="sc">|&gt;</span> <span class="fu">pin_list</span>()</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;mtcars&quot;</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>versions <span class="ot">&lt;-</span> web_board <span class="sc">|&gt;</span> <span class="fu">pin_versions</span>(<span class="st">&quot;mtcars&quot;</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>versions</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 3</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt;   version                created             hash </span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                  &lt;dttm&gt;              &lt;chr&gt;</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; 1 20260309T132705Z-c4fcd 2026-03-09 07:27:05 c4fcd</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; 2 20260309T132708Z-19d36 2026-03-09 07:27:08 19d36</span></span></code></pre></div>
+<p>We can read the most-recent version of the <code>&quot;mtcars&quot;</code>
+pin:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>web_board <span class="sc">|&gt;</span> <span class="fu">pin_read</span>(<span class="st">&quot;mtcars&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt;    mpg cyl disp  hp drat    wt  qsec vs am gear carb lper100km</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt; 1 21.0   6  160 110 3.90 2.620 16.46  0  1    4    4   11.2007</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; 2 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4   11.2007</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; 3 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1   10.3164</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; 4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1   10.9914</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt; 5 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2   12.5783</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; 6 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1   12.9953</span></span></code></pre></div>
+<p>We can also read the first version:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>web_board <span class="sc">|&gt;</span> <span class="fu">pin_read</span>(<span class="st">&quot;mtcars&quot;</span>, <span class="at">version =</span> versions<span class="sc">$</span>version[[<span class="dv">1</span>]]) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">#&gt;    mpg cyl disp  hp drat    wt  qsec vs am gear carb</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; 1 21.0   6  160 110 3.90 2.620 16.46  0  1    4    4</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; 2 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; 3 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; 4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt; 5 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt; 6 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</span></span></code></pre></div>
+</div>
+<div id="publishing-platforms" class="section level2">
+<h2>Publishing platforms</h2>
+<p>The goal of this section is to illustrate ways to publish a board as
+a part of a website.</p>
+<div id="pkgdown" class="section level3">
+<h3>pkgdown</h3>
+<p>Pins offers another way for package developers to share data
+associated with an R package. Publishing a package dataset as a pin can
+extend your data’s “audience” to those who have not installed the
+package.</p>
+<p>Using <a href="https://pkgdown.r-lib.org/articles/customise.html#additional-html-and-files">pkgdown</a>,
+any files you save in the directory <code>pkgdown/assets/</code> will be
+copied to the website’s root directory when
+<code>pkgdown::build_site()</code> is run.</p>
+<p>The <a href="https://r-pkgs.org/data.html#sec-data-data-raw"><em>R
+Packages</em> book</a> suggests using a folder called
+<code>data-raw</code> for working with datasets; this can be adapted to
+use pins. You would start with <code>usethis::use_data_raw()</code>. In
+a file in your <code>/data-raw</code> directory, wrangle and clean your
+datasets in the same way as if you were going to use
+<code>usethis::use_data()</code>. To offer such datasets on a web-based
+board instead of as a built-in package dataset, in your
+<code>/data-raw</code> file you would:</p>
+<ul>
+<li>Create a board:
+<code>board_folder(here::here(&quot;pkgdown/assets/pins-board&quot;))</code> (you
+might use a different name than <code>&quot;pins-board&quot;</code>).</li>
+<li>Write your datasets to the board using
+<code>pin_write()</code>.</li>
+<li>At the end, call <code>write_board_manifest()</code>.</li>
+</ul>
+<p>Now when you build your pkgdown site and serve it (perhaps via GitHub
+Pages at a URL like
+<code>https://user-name.github.io/repo-name/</code>), your datasets are
+available as pins.</p>
+<p>The <em>R Packages</em> book offers this observation on CRAN and
+package data:</p>
+<blockquote>
+<p>Generally, package data should be smaller than a megabyte - if it’s
+larger you’ll need to argue for an exemption.</p>
+</blockquote>
+<p>Publishing a board on your pkgdown site provides a way to offer
+datasets too large for CRAN or extended versions of your data. A
+consumer can read your pins by setting up a board like:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>board <span class="ot">&lt;-</span> <span class="fu">board_url</span>(<span class="st">&quot;https://user-name.github.io/repo-name/pins-board/&quot;</span>)</span></code></pre></div>
+</div>
+<div id="s3" class="section level3">
+<h3>S3</h3>
+<p>S3 buckets can be made available to different users using <a href="https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-policy.html">permissions</a>;
+buckets can even be made publicly accessible. Publishing data as a pin
+in an S3 bucket can allow your collaborators to read without dealing
+with the authentication required by <code>board_s3()</code>.</p>
+<p>To offer datasets as a pin on S3 via <code>board_url()</code> you
+would:</p>
+<ul>
+<li>Create a board: <code>board_s3(&quot;your-existing-bucket&quot;)</code> (set
+the bucket’s permissions to give appropriate people access).</li>
+<li>Write your datasets to the board using
+<code>pin_write()</code>.</li>
+<li>At the end, call <code>write_board_manifest()</code>.</li>
+</ul>
+<p>S3 buckets typically have a URL like
+<code>https://your-existing-bucket.s3.us-west-2.amazonaws.com/</code>.
+For a person who has access to your bucket, they can read your pins by
+setting up a board like:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>board <span class="ot">&lt;-</span> <span class="fu">board_url</span>(<span class="st">&quot;https://your-existing-bucket.s3.us-west-2.amazonaws.com/&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

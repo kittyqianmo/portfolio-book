@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Upgrading to pins 1.0.0</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Upgrading to pins 1.0.0</h1>
+
+
+
+<p>pins 1.0.0 introduced a completely new API and the old legacy API was
+deprecated in pins 1.4.0, so now is a good time to switch to the new
+interface. This vignette shows a couple of examples of updating legacy
+code to the modern API, then provides a full set of equivalences between
+the legacy and modern function names.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(pins)</span></code></pre></div>
+<div id="examples" class="section level2">
+<h2>Examples</h2>
+<p>A simple example of the legacy API looks something like this:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Legacy API</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">board_register_local</span>(<span class="st">&quot;vignette&quot;</span>, <span class="fu">tempfile</span>())</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">pin</span>(<span class="fu">head</span>(mtcars), <span class="st">&quot;mtcars&quot;</span>, <span class="at">board =</span> <span class="st">&quot;vignette&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">pin_get</span>(<span class="st">&quot;mtcars&quot;</span>, <span class="at">board =</span> <span class="st">&quot;vignette&quot;</span>)</span></code></pre></div>
+<p>To convert to the modern API you need to make two major changes:</p>
+<ul>
+<li>Instead of registering a named board, you create an explicit board
+object.</li>
+<li>You use <code>pin_read()</code> and <code>pin_write()</code> instead
+of <code>pin_get()</code> and <code>pin()</code>.</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Modern API</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>board <span class="ot">&lt;-</span> <span class="fu">board_local</span>()</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">pin_write</span>(board, <span class="fu">head</span>(mtcars), <span class="st">&quot;mtcars&quot;</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">pin_read</span>(board, <span class="st">&quot;mtcars&quot;</span>)</span></code></pre></div>
+<p>Since the board object is always the first argument, you might also
+want to use the pipe:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Modern API</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>board <span class="ot">&lt;-</span> <span class="fu">board_local</span>()</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>board <span class="sc">|&gt;</span> <span class="fu">pin_write</span>(<span class="fu">head</span>(mtcars), <span class="st">&quot;mtcars&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>board <span class="sc">|&gt;</span> <span class="fu">pin_read</span>(<span class="st">&quot;mtcars&quot;</span>)</span></code></pre></div>
+<div id="pinning-files" class="section level3">
+<h3>Pinning files</h3>
+<p>Another way to use <code>pin()</code> is with a path to a file:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Legacy API</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="fu">tempfile</span>()</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">writeLines</span>(letters, path)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="fu">pin</span>(path, <span class="st">&quot;alphabet&quot;</span>, <span class="at">board =</span> <span class="st">&quot;vignette&quot;</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">pin_get</span>(<span class="st">&quot;alphabet&quot;</span>, <span class="at">board =</span> <span class="st">&quot;vignette&quot;</span>)</span></code></pre></div>
+<p>pins 1.0.0 clearly separates the two cases of pin an object and
+pinning a file, so here instead of <code>pin_write()</code> and
+<code>pin_read()</code> you need to <code>pin_upload()</code> and
+<code>pin_download()</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Modern API</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>board <span class="sc">|&gt;</span> <span class="fu">pin_upload</span>(path, <span class="st">&quot;alphabet&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>board <span class="sc">|&gt;</span> <span class="fu">pin_download</span>(<span class="st">&quot;alphabet&quot;</span>)</span></code></pre></div>
+</div>
+<div id="pinning-a-url" class="section level3">
+<h3>Pinning a url</h3>
+<p>Finally, you can <code>pin()</code> a url to automatically
+re-download it when it changes:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Legacy API</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>base <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/rstudio/pins-r/main/tests/testthat/&quot;</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>(<span class="fu">pin</span>(<span class="fu">paste0</span>(base, <span class="st">&quot;pin-files/first.txt&quot;</span>), <span class="at">board =</span> <span class="st">&quot;vignette&quot;</span>))</span></code></pre></div>
+<p>This now needs to be made explicit with the new
+<code>board_url()</code>, and since this returns a path, not a file, you
+need to use <code>pin_download()</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Modern API</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>board_github <span class="ot">&lt;-</span> <span class="fu">board_url</span>(<span class="fu">c</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">raw =</span> <span class="fu">paste0</span>(base, <span class="st">&quot;pin-files/first.txt&quot;</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>))</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>board_github <span class="sc">|&gt;</span> <span class="fu">pin_download</span>(<span class="st">&quot;raw&quot;</span>)</span></code></pre></div>
+</div>
+<div id="implicit-board" class="section level3">
+<h3>Implicit board</h3>
+<p>It’s also possible to use <code>pin()</code> and
+<code>pin_get()</code> without an explicit board argument, in which case
+it automatically uses a local board:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Legacy API</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">pin</span>(<span class="fu">data.frame</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>), <span class="st">&quot;test-data&quot;</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">pin_get</span>(<span class="st">&quot;test-data&quot;</span>)</span></code></pre></div>
+<p>To convert this code, you need to create an explicit
+<code>board_local()</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Modern API</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>board <span class="ot">&lt;-</span> <span class="fu">board_local</span>()</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>board <span class="sc">|&gt;</span> <span class="fu">pin_write</span>(<span class="fu">data.frame</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>), <span class="st">&quot;test-data&quot;</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>board <span class="sc">|&gt;</span> <span class="fu">pin_read</span>(<span class="st">&quot;test-data&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="equivalents" class="section level2">
+<h2>Equivalents</h2>
+<div id="board-functions" class="section level3">
+<h3>Board functions</h3>
+<table>
+<colgroup>
+<col width="34%" />
+<col width="65%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Legacy API</th>
+<th>Modern API</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>board_register_azure()</code></td>
+<td><code>board_azure()</code></td>
+</tr>
+<tr class="even">
+<td><code>board_register_datatxt()</code></td>
+<td>Not currently implemented</td>
+</tr>
+<tr class="odd">
+<td><code>board_register_dospace()</code></td>
+<td>Not currently implemented</td>
+</tr>
+<tr class="even">
+<td><code>board_register_gcloud()</code></td>
+<td><code>board_gcs()</code></td>
+</tr>
+<tr class="odd">
+<td><code>board_register_github()</code></td>
+<td>Use <code>board_folder()</code> together with
+<code>board_url()</code></td>
+</tr>
+<tr class="even">
+<td><code>board_register_local()</code></td>
+<td><code>board_local()</code></td>
+</tr>
+<tr class="odd">
+<td><code>board_register_kaggle()</code></td>
+<td><code>board_kaggle_dataset()</code> /
+<code>board_kaggle_competition()</code></td>
+</tr>
+<tr class="even">
+<td><code>board_register_rsconnect()</code></td>
+<td><code>board_connect()</code></td>
+</tr>
+<tr class="odd">
+<td><code>board_register_s3()</code></td>
+<td><code>board_s3()</code></td>
+</tr>
+<tr class="even">
+<td><code>pin()</code> with a URL</td>
+<td><code>board_url()</code></td>
+</tr>
+</tbody>
+</table>
+<p>Future releases will add support for additional boards based on user
+feedback.</p>
+</div>
+<div id="pin-functions" class="section level3">
+<h3>Pin functions</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Legacy API</th>
+<th>Modern API</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>board_browse()</code></td>
+<td><code>pin_browse()</code></td>
+</tr>
+<tr class="even">
+<td><code>pin()</code></td>
+<td><code>pin_write()</code> / <code>pin_upload()</code></td>
+</tr>
+<tr class="odd">
+<td><code>pin_get()</code></td>
+<td><code>pin_read()</code> / <code>pin_download()</code></td>
+</tr>
+<tr class="even">
+<td><code>pin_find()</code></td>
+<td><code>pin_search()</code></td>
+</tr>
+<tr class="odd">
+<td><code>pin_info()</code></td>
+<td><code>pin_meta()</code></td>
+</tr>
+<tr class="even">
+<td><code>pin_reactive()</code></td>
+<td><code>pin_reactive_read()</code> /
+<code>pin_reactive_download()</code></td>
+</tr>
+<tr class="odd">
+<td><code>pin_remove()</code></td>
+<td><code>pin_delete()</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
