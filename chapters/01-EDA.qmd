@@ -5,24 +5,10 @@ format: html
 date: today
 ---
 
-> **How to fill this chapter in**
-> This is your main portfolio piece. The numbered sections below follow the
-> **IMRAD** structure of research: question ≈ *introduction*, getting the
-> data + cleaning decisions ≈ *methods*, plotting the story ≈ *results*, and
-> findings ≈ *discussion*. In the *Reproducible Workflows* course:
->
-> - **Session 2** lab: find a dataset you care about on an open-data portal
->   (data.gouv.fr or your own country's), source it **reproducibly by code**,
->   run an EDA, clean the data, and commit it to git.
-> - **Session 3** work block: finish and polish the chapter, pin your data and
->   environment, open a pull request for review, and publish the book to a URL.
->
-> Everything between the `TODO` markers below is a template to replace with
-> your own content.
 
 ## The question
 
-what is the dominant factor to effect the potential of photovoltaic power generation?
+What is the dominant factor to effect the potential of photovoltaic power generation?
 
 
 ## Getting the data
