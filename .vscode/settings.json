@@ -1,0 +1,11 @@
+{
+  "positron.r.customBinaries": [
+    "/home/kittyqianmo/.uvr/r-versions/4.6.1/bin/R"
+  ],
+  "positron.r.customRootFolders": [
+    "/home/kittyqianmo/.uvr/r-versions"
+  ],
+  "positron.r.interpreters.default": "/home/kittyqianmo/.uvr/r-versions/4.6.1/bin/R",
+  "r.rpath.linux": "/home/kittyqianmo/.uvr/r-versions/4.6.1/bin/R",
+  "r.rterm.linux": "/home/kittyqianmo/.uvr/r-versions/4.6.1/bin/R"
+}

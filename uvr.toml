@@ -1,0 +1,9 @@
+[project]
+name = "portfolio-book"
+
+[dependencies]
+ggplot2 = "*"
+janitor = "*"
+pheatmap = "*"
+pins = "*"
+rdatagouv = "*"
