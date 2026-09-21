@@ -18,7 +18,7 @@ book:
   chapters:
     - index.qmd
     - chapters/01-EDA.qmd
-    - chapters/02-semester-2.qmd
+    - chapters/02-Twins.qmd
     - chapters/03-semester-3.qmd
     - references.qmd
 
