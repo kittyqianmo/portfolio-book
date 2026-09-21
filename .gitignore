@@ -30,3 +30,5 @@ _book/
 **/*.quarto_ipynb
 .httr-oauth
 .quarto
+/.uvr/library/
+/.uvr/activate*
