@@ -1,0 +1,25 @@
+activate                Show how to activate the project in a shell
+add                     Add packages to the project
+cache_clean             Remove cached package downloads
+completions             Generate shell completions (bash, zsh, fish,
+                        powershell)
+doctor                  Diagnose environment issues (R, build tools,
+                        project status)
+export                  Export lockfile to renv.lock format
+import                  Import renv lockfile to create uvr.toml
+init                    Initialize a new uvr project
+install_uvr             Install the uvr binary
+lock                    Update the lockfile
+r_install               Install an R version
+r_list                  List R versions
+r_pin                   Pin the R version
+r_use                   Set the R version constraint
+remove_pkgs             Remove packages from the project
+run                     Run an R script in the project environment
+scan                    Find packages your code uses but the manifest
+                        does not declare
+sync                    Synchronize project library from lockfile
+tree                    Show the dependency tree
+update_pkgs             Update installed packages to the latest allowed
+                        versions
+update_uvr              Update uvr (R package + CLI binary)

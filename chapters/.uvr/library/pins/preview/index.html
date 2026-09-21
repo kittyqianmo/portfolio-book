@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="pagedtable-1.1/pagedtable.css">
+    <script language="javascript" src="pagedtable-1.1/pagedtable.js"></script>
+    <link rel="stylesheet" href="highlight.js-9.15.9/qtcreator_light.css">
+    <script src="highlight.js-9.15.9/highlight.js"></script>
+    <style>
+      body {
+        font-size: 16px;
+        font-family: 'Lato', sans-serif;
+        color: #333;
+      }
+      section {
+        border-left: solid 6px #dddddd;
+        padding: 0.5em 0 0.5em 10px;
+        margin-bottom: 1em;
+      }
+      pre {
+        margin: 0;
+        padding: 1em;
+      }
+      h3 {
+        font-weight: normal;
+        color: #888;
+        margin: 0 0 0.5em 0;
+      }
+    </style>
+  </head>
+  <body>
+
+    <section>
+       <h3>{{{pin_name}}}</h3>
+       {{#pin_metadata}}
+       <p>
+         {{#date}}<b>Last updated from R:</b> {{{.}}} &bull;{{/date}}
+         <b>Format:</b> {{{format}}} &bull;
+         <b>API:</b> v{{{api_version}}}
+       </p>
+       <p>{{{description}}}</p>
+       <p>Download data: {{{pin_files}}}</p>
+       <details>
+         <summary>Raw metadata</summary>
+         <pre>{{{as_yaml}}}</pre>
+       </details>
+       {{/pin_metadata}}
+    </section>
+
+    <section style="{{url_preview_style}}">
+      <h3>Learn more about this pin at:</h3>
+      <p>{{{urls}}}</p>
+    </section>
+
+    <section>
+      <h3>R Code</h3>
+        <pre id="pin-r" class="pin-code"><code class="r">library(pins)
+board <- {{{board_deparse}}}
+pin_read(board, "{{pin_name}}")</code></pre>
+      <script type="text/javascript">
+        hljs.registerLanguage("r", highlight_r);
+        hljs.registerLanguage("python", highlight_python);
+        hljs.initHighlightingOnLoad();
+      </script>
+    </section>
+
+    <section style="{{show_python_style}}">
+      <h3>Python Code</h3>
+        <pre id="pin-python" class="pin-code"><code class="python">import pins
+from dotenv import load_dotenv
+load_dotenv()
+
+board = pins.board_connect()
+board.pin_read(board, "{{pin_name}}")</code></pre>
+    </section>
+
+    <section style="{{data_preview_style}}">
+      <h3>Preview <small>(up to 100 rows)</small></h3>
+      <div data-pagedtable style="height: 25em;">
+        <script data-pagedtable-source type="application/json">
+          {{{data_preview}}}
+        </script>
+      </div>
+    </section>
+  </body>
+</html>

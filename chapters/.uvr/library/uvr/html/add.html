@@ -1,0 +1,82 @@
+<!DOCTYPE html><html><head><title>R: Add packages to the project</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+<script>
+const macros = { "\\R": "\\textsf{R}", "\\mbox": "\\text", "\\code": "\\texttt"};
+function processMathHTML() {
+    var l = document.getElementsByClassName('reqn');
+    for (let e of l) { katex.render(e.textContent, e, { throwOnError: false, macros }); }
+    return;
+}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
+    onload="processMathHTML();"></script>
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body><div class="container"><main>
+
+<table style="width: 100%;"><tr><td>add {uvr}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Add packages to the project</h2>
+
+<h3>Description</h3>
+
+<p>Adds one or more packages to the manifest, updates the lockfile, and
+installs them. Equivalent to <code>uvr add</code> on the command line.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre><code class='language-R'>add(packages, dev = FALSE, bioc = FALSE, dir = NULL, quiet = FALSE)
+</code></pre>
+
+
+<h3>Arguments</h3>
+
+<table role = "presentation">
+<tr><td><code id="packages">packages</code></td>
+<td>
+<p>Character vector of package names (e.g. <code>"ggplot2"</code>,
+<code>"tidymodels@&gt;=1.0.0"</code>, <code>"user/repo@main"</code>).</p>
+</td></tr>
+<tr><td><code id="dev">dev</code></td>
+<td>
+<p>If <code>TRUE</code>, add as dev dependencies.</p>
+</td></tr>
+<tr><td><code id="bioc">bioc</code></td>
+<td>
+<p>If <code>TRUE</code>, packages come from Bioconductor.</p>
+</td></tr>
+<tr><td><code id="dir">dir</code></td>
+<td>
+<p>Optional working directory. Defaults to <code>getwd()</code>.</p>
+</td></tr>
+<tr><td><code id="quiet">quiet</code></td>
+<td>
+<p>If <code>TRUE</code>, suppress output.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>Invisible <code>TRUE</code> on success.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre><code class='language-R'>## Not run: 
+add("ggplot2")
+add(c("dplyr", "tidyr"))
+add("DESeq2", bioc = TRUE)
+add("user/repo", dev = TRUE)
+add("ggplot2@&gt;=3.0.0")
+
+## End(Not run)
+</code></pre>
+
+<hr><div style="text-align: center;">[Package <em>uvr</em> version 0.1.2 <a href="00Index.html">Index</a>]</div></main>
+
+</div>
+</body></html>

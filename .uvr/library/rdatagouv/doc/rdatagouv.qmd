@@ -1,0 +1,564 @@
+---
+title: "Finding, judging and re-fetching French open data with rdatagouv"
+author: "Aymeric Stamm"
+format: html
+editor: source
+vignette: >
+  %\VignetteIndexEntry{Finding, judging and re-fetching French open data}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+> This vignette assumes you can reach the data.gouv.fr API. Code that touches
+> the live API only runs when the vignette is rendered with `DATAGOUV_LIVE=1`
+> set (as when building this site with pkgdown); it is skipped during `R CMD
+> build`/`R CMD check` so those builds stay clean. The worked examples below
+> show real output from a live render.
+
+The examples that hit the live API are marked `#| live: true`; they only run
+when the document is rendered with the `DATAGOUV_LIVE=1` environment variable
+set (the pkgdown site build sets it), and are skipped otherwise — in particular
+during `R CMD build`/`R CMD check`, which render this vignette in a subprocess
+where the usual `_R_CHECK_PACKAGE_NAME_` marker is *not* set and therefore
+cannot be relied on to suppress live code. In-memory examples run
+unconditionally:
+
+```{r}
+#| include: false
+has_rdatagouv <- requireNamespace("rdatagouv", quietly = TRUE)
+if (has_rdatagouv) {
+  library(rdatagouv)
+}
+library(dplyr)     # for the pipe workflow (pull(), head())
+knitr::opts_hooks$set(
+  live = function(options) {
+    if (isTRUE(options$live)) {
+      # Evaluate only when explicitly opted in. Fail closed: absent or unset
+      # DATAGOUV_LIVE means "do not touch the network", which is what R CMD
+      # build/check (and any ordinary render) want.
+      options$eval <- toupper(Sys.getenv("DATAGOUV_LIVE")) == "1"
+    }
+    options
+  },
+  dg = function(options) {
+    # Gate the in-memory, network-free example chunks (marked `#| dg: <fn>`)
+    # so a broken install can never abort R CMD build/check. We fail closed:
+    # the chunk runs only on the website — pkgdown sets DATAGOUV_LIVE=1, where
+    # the package is guaranteed to work — and is skipped during the packaging
+    # build, which normally does not set that variable. A requireNamespace()/
+    # get() "is it callable?" prediction proved unreliable on Windows/R-devel,
+    # where a present-but-unforceable lazy-load export reports callable yet
+    # throws when the function is actually invoked, hard-failing the build
+    # (see AGENTS.md). Gating on DATAGOUV_LIVE is therefore a best-effort
+    # guard: even with the chunk allowed to run, it can no longer abort the
+    # render, because its body is wrapped in try() (a low-level catch-all
+    # that contains even the unforceable-export hard failure) and it sets
+    # `#| error: true`. dg_summary()/dg_summarise() are still fully exercised
+    # by the test suite.
+    fun <- options$dg
+    ok <- is.character(fun) && length(fun) == 1L &&
+      toupper(Sys.getenv("DATAGOUV_LIVE")) == "1" &&
+      "package:rdatagouv" %in% search() &&
+      !is.null(tryCatch(get(fun, inherits = TRUE), error = function(e) NULL))
+    options$eval <- ok && isTRUE(options$eval)
+    options
+  }
+)
+```
+
+## The problem rdatagouv solves
+
+`rdatagouv` is a small R client for the public API of
+[data.gouv.fr](https://www.data.gouv.fr), the French government's open data
+platform. It was written with a specific user in mind: a student or a data
+scientist who wants to *find* a dataset that matches their interests, *judge*
+whether it is usable for analysis, *download* it, and later *re-fetch the exact
+same table* in a reproducible way.
+
+These four steps may sound trivial, but the platform makes each of them harder
+than it should be:
+
+1. **Finding.** Enumerating "all" published datasets means paging through
+   tens of thousands of records. The catalog search is server-side and only
+   matches titles and descriptions, which are free-form and often uninformative.
+2. **Judging.** The tabular API provides no human-readable variable
+   descriptions. The actual descriptions live in separate *schema* documents on
+   [schema.data.gouv.fr](https://schema.data.gouv.fr); data.gouv.fr only attaches
+   a pointer (`name` / `url`) to a resource. Without resolving that pointer, you
+   cannot tell whether a column really means what you assume.
+3. **Downloading.** Datasets come in many formats (CSV, Excel, ZIP, Parquet,
+   JSON...), the declared format is not always accurate, and a "dataset" may
+   contain several files.
+4. **Re-fetching.** Catalog titles and even ordering change over time, so a
+   script that reaches for a dataset "by title" is fragile. You want an address
+   that always resolves to the same table.
+
+`rdatagouv` addresses all four. Its functions are organised around that workflow:
+
+| Step | Function |
+|------|----------|
+| Find / search the catalog | `dg_find_datasets()`, `dg_find_organization()`, `dg_find_topics()` |
+| Judge documented columns | `dg_schema()` |
+| Download tabular resources | `dg_pull_dataset()` |
+| Inspect parsing problems | `dg_problems()` |
+| Summarise table contents | `dg_summary()`, `dg_summarise()` |
+| Re-fetch a table reproducibly | `dg_refetch()` |
+
+The approach mirrors what several US cities propose (e.g.
+[`nycOpenData`](https://github.com/ropensci/nycOpenData) for New York), but
+tailored to the data.gouv.fr API.
+
+## Finding datasets
+
+`dg_find_datasets()` returns a tibble with one row per dataset:
+
+```{r}
+#| live: true
+library(rdatagouv)
+
+datasets <- dg_find_datasets(n = 20)
+head(datasets)
+```
+
+The columns are chosen to help you decide, at a glance, whether a dataset is
+worth pulling:
+
+* `id` is the stable, unique identifier used to address the dataset later.
+* `n_resources` is the number of files the dataset contains.
+* `formats` lists the distinct file formats found among them.
+* `has_table` is `TRUE` when at least one resource can be parsed into a table
+  by this package.
+* `has_schema` is `TRUE` when at least one resource declares a data schema,
+  i.e. when per-variable documentation is available via `dg_schema()`.
+
+The search endpoint does not inline each dataset's resources, so the
+resource-based columns `n_resources`, `formats`, `has_table` and `has_schema`
+are `NA` unless you opt in with `resources = TRUE` (which costs one extra
+request per dataset):
+
+```{r}
+#| live: true
+cycle <- dg_find_datasets(q = "vélo", n = 10, resources = TRUE)
+cycle[, c("title", "n_resources", "has_table", "has_schema")]
+```
+
+The discovery catalog is **restricted to data.gouv's official tabular
+formats** (`csv`, `csv.gz`, `xls`, `xlsx`, `parquet`), so every listed dataset
+is in principle openable as a table — `has_table` is almost always `TRUE`. This
+is a deliberate choice: JSON, TSV and TXT resources can still be parsed when
+you address them directly (see `dg_pull_dataset()`), but they are not guaranteed
+tabular and are left out of the catalog so that "the catalog" stays a reliable
+list of tables.
+
+### Restricting to documented datasets
+
+Because descriptions live in schemas and only a fraction of datasets declare
+one, `dg_schema()` only helps on a subset of the catalog. You can target that
+subset directly. v2 has no boolean "declares a schema" server-side filter, so
+`schema_only` filters client-side on `has_schema`, which needs the per-dataset
+resource fetch — so calling it forces `resources = TRUE` (with a message about
+the extra requests) and the filter just works:
+
+```{r}
+#| live: true
+documented <- dg_find_datasets(schema_only = TRUE, n = 10)
+documented[, c("title", "has_schema")]
+```
+
+### Restricting to specific formats
+
+You can narrow the catalog to datasets that carry a resource in a format of
+your choice with the `format` argument. This is especially useful to find
+lighter files (e.g. `parquet`) that download faster than their CSV twins:
+
+```{r}
+#| live: true
+parquet <- dg_find_datasets(format = "parquet", n = 10)
+parquet[, c("title", "formats")]
+```
+
+Multiple formats can be requested at once; each is queried server-side and the
+results are combined.
+
+### Finding a specific organization's datasets
+
+`dg_find_datasets(organization =)` can address a producer by its 24-hex id, its
+`name`, or its `slug`. `dg_find_organization()` lists the organizations known to
+data.gouv so you can discover which one you want and get its stable id:
+
+```{r}
+#| live: true
+orgs <- dg_find_organization(q = "SNCF")
+orgs[, c("name", "slug", "datasets")]
+```
+
+The slug resolves to the same datasets as the corresponding id — pass either to
+`dg_find_datasets()`:
+
+```{r}
+#| live: true
+sncf <- dg_find_datasets(organization = "sncf", n = 10)
+sncf[, c("title", "organization")]
+```
+
+### Finding datasets grouped under a theme
+
+Beyond producers, data.gouv curates datasets into *themes* (topics) such as
+"Mobilité", "Environnement" or "Énergie". `dg_find_topics()` lists these
+themes — including how many elements each groups — so you can discover one and
+get its stable 24-hex id:
+
+```{r}
+#| live: true
+topics <- dg_find_topics(q = "mobilité", n = 5)
+topics[, c("name", "n_elements")]
+```
+
+Pass a theme's id to `dg_find_datasets(topic =)` to narrow a catalog search to
+datasets grouped under it (the same single-valued server-side filter that
+`organization`/`geozone` use; it takes a topic id, not a name/slug):
+
+```{r}
+#| live: true
+mobility <- dg_find_datasets(topic = topics$id[1], n = 10)
+mobility[, c("title", "organization")]
+```
+
+By default `dg_find_topics()` reports `n_elements` — the theme's declared total
+element count (datasets, reuses, dataservices, ...). To see how that total
+breaks down by kind, pass `elements = TRUE` (costing one extra request per
+topic); the `n_datasets`/`n_dataservices`/`n_reuses` columns are `NA`
+otherwise.
+
+## Judging whether a dataset is usable
+
+A quick way to judge a dataset before pulling it is `dg_glimpse()`. It takes a
+dataset id — or, like the other functions, a pulled table (its id is read
+automatically) — and returns a named list of the v2-inline metadata the fetch
+path does not surface directly: the dataset's `quality` score and flags, its
+usage `metrics`, and its `context` (license, frequency, coverage, ...):
+
+```{r}
+#| live: true
+glimpse <- dg_glimpse("6a6be5976a05df136d48fb7a")
+glimpse$quality$score             # 0..1 quality score
+glimpse$metrics$views             # how often the dataset is looked at
+glimpse$context$license           # e.g. "open" / "notspecified"
+```
+
+The judged usefulness of a dataset also hinges on whether the columns mean what
+you think they mean. That information comes from the producer's *schema* on
+schema.data.gouv.fr. `dg_schema()` takes a table (its id is read automatically)
+or a composed table id and returns the documented fields:
+
+```{r}
+#| live: true
+# schema_only filters client-side, so request a batch and take the first hit.
+documented <- dg_find_datasets(schema_only = TRUE, n = 100)
+table_id <- documented$id[!is.na(documented$id)][[1]]
+
+# Pull it, then inspect the schema of the returned table.
+tbl <- dg_pull_dataset(table_id)
+schema <- dg_schema(tbl)
+
+# Human-readable titles and descriptions of every column:
+head(schema)
+```
+
+The result is a tibble with one row per column and the columns `name`,
+`title`, `description`, `type` and `example`, together with the schema's own
+`title` and `name` attached as attributes. Where the schema provides no title
+or description (some producers document only some fields), the corresponding
+cell is `NA`.
+
+If the resource carries no schema pointer, `dg_schema()` returns `NULL` with a
+message explaining that no variable documentation is available.
+
+## Downloading data
+
+`dg_pull_dataset()` downloads the first parseable tabular resource of a dataset
+and returns a **single tibble**:
+
+```{r}
+#| live: true
+tbl <- dg_pull_dataset("6397c0ff56d3963118a18345")
+head(tbl)
+dg_table_id(tbl)
+```
+
+A few things to know about pulling:
+
+* Supported formats are `csv`, `csv.gz`, `xls`, `xlsx`, `parquet`, `tsv`, `txt`
+  and `json`. A **ZIP** resource is unpacked and its first parseable file is
+  returned by default; `all_files = TRUE` keeps every contained file in one of
+  these formats as a named list — one element per file.
+* The delimiter of CSV/TXT resources is auto-detected (comma, semicolon, tab,
+  pipe, ...), so both standard and European-style files (semicolon /
+  decimal-comma) are handled without configuration.
+* Declared formats are not always accurate, and a candidate may fail to parse
+  (e.g. a `json` resource that actually serves an API metadata document).
+  `dg_pull_dataset()` skips non-parseable resources and falls back to the next
+  tabular one instead of erroring.
+* When a dataset offers the *same table* in several formats (same file name,
+  different extension, e.g. `data.csv` vs `data.xlsx`), the lightest advertised
+  file is downloaded so the pull is as small as possible; resources with
+  distinct names keep their declared order.
+* Every returned table carries its stable, unique address as an `id`
+  attribute, readable with `dg_table_id()`.
+* Column types are seeded from data.gouv's own `csv-detective` profile by
+  default (`use_tabular_types = TRUE`), then remaining inference is left to
+  vroom. The profile is best-effort — it only exists for single-file resources
+  indexed by the tabular service, so a missing profile (or a ZIP member) falls
+  back to type inference; pass `use_tabular_types = FALSE` to disable seeding
+  entirely. You can always force specific columns with
+  `col_types = c(col_name = "Date")` (shorthand: `"character"`,
+  `"double"`/`"numeric"`, `"integer"`, `"logical"`, `"Date"`, `"datetime"`,
+  `"skip"`, `"guess"`; explicit `col_types` always win). This is handy when
+  vroom guesses a type the data does not fully match — e.g. a mostly-padded ISO
+  date column with a few non-padded stragglers like `2021-7-01`, which vroom
+  would otherwise flag as a parsing issue; forcing `"Date"` turns those
+  stragglers into `NA`.
+* Any parsing issues vroom encountered are attached to the table as an
+  `rdatagouv_problems` attribute instead of a noisy per-cell warning. Read them
+  with `dg_problems(tbl)` (a data frame of `row`, `col`, `expected`, `actual`,
+  or `NULL` when the table parsed cleanly).
+
+## When pulling goes wrong: parsing issues
+
+A table is *pulled* by guessing how each column should be read — its type
+(integer, double, date, ...) is inferred from the values it contains. Real-world
+open data rarely cooperates perfectly: a column can hold mixed content, and the
+guess can be wrong. This section explains how `rdatagouv` surfaces those
+problems and how you can fix them.
+
+### Detecting a parsing problem
+
+While it reads a delimited file, vroom reports every cell it cannot reconcile
+with the column type it committed to. Rather than blasting these one-by-one as
+warnings, `rdatagouv` silences the noisy per-cell messages and keeps the
+underlying record on the table, readable with `dg_problems()`:
+
+```{r}
+#| dg: dg_problems
+#| error: true
+# In-memory demo of the problems attribute. A real pull works the same way:
+#   tbl <- dg_pull_dataset("<id>")
+#   dg_problems(tbl)
+try({
+  # A column declared "double" but holding some non-numeric cells.
+  csv <- tempfile(fileext = ".csv")
+  writeLines(c("x,y", "1,2", "2,oops", "3,4"), csv)
+  pr <- vroom::problems(vroom::vroom(csv, col_types = vroom::cols(
+    x = "d", y = "d"
+  )))
+  pr[, c("row", "col", "expected", "actual")]
+})
+```
+
+A *clean* pull — one where every cell matched its inferred type — returns
+`NULL` from `dg_problems()`; a table with issues returns a data frame with one
+row per problem and the columns `row`, `col`, `expected` and `actual`:
+
+| Column | Meaning |
+|--------|---------|
+| `row` | 1-based row (of the file) where the problem occurred |
+| `col` | column name (or number) that could not be parsed |
+| `expected` | the type vroom had committed to (e.g. `a double`) |
+| `actual` | the raw value that failed, e.g. `oops` |
+
+The attribute is only attached when there is something to report, so a healthy
+table stays lightweight and ordinary data frames (not produced by a pull)
+return `NULL`.
+
+### A common trigger: mostly-padded ISO dates
+
+A frequent real-world case is a date column such as `2021-07-01` that is
+*padded* (two-digit month/day) for almost every row, with a few non-padded
+stragglers like `2021-7-01` or `2024-11-5`. vroom sees mostly-padded ISO dates,
+commits to a `Date` collector, and flags each straggler as a parsing issue. The
+stragglers parse to `NA` and the warning count is often large — the trigger
+that motivated this feature. This is a *data* quality issue, not a bug in the
+pull.
+
+### Solving it: forcing column types
+
+You can take control of the guess with `col_types`, which overrides vroom's
+inference for the named columns (shorthand: `"character"`, `"double"`/
+`"numeric"`, `"integer"`, `"logical"`, `"Date"`, `"datetime"`, `"skip"`,
+`"guess"`). Two ways to fix the mixed-date case:
+
+1. **Force the stragglers to text** with `"character"` — nothing is lost and no
+   value becomes `NA`; you can parse the dates yourself afterwards. The IRVE
+   charging-points dataset is a good real example: its `date_mise_en_service`
+   and `date_maj` columns are mostly padded with a few stragglers like
+   `2021-7-01`:
+   ```r
+   tbl <- dg_pull_dataset("5448d3e0c751df01f85d0572",
+     col_types = c(date_mise_en_service = "character", date_maj = "character"))
+   dg_problems(tbl)          # NULL — nothing is flagged any more
+   ```
+2. **Force `"Date"`** and accept that the stragglers become `NA` — right when a
+   few unparsed dates are acceptable for your analysis:
+   ```r
+   tbl <- dg_refetch(tbl,
+     col_types = c(date_mise_en_service = "Date", date_maj = "Date"))
+   ```
+
+Both `dg_pull_dataset()` and `dg_refetch()` accept `col_types` (including
+inside a ZIP with `all_files = TRUE`), so you can correct the same table every
+time you re-fetch it:
+
+```{r}
+#| live: true
+# Pull the IRVE charging-points table once, inspect its parsing issues with
+# dg_problems(), then re-fetch the same table with the mixed-date columns
+# forced to text so nothing is flagged.
+tbl <- dg_pull_dataset("5448d3e0c751df01f85d0572")
+nrow(dg_problems(tbl))                    # how many mixed-date stragglers
+tbl <- dg_refetch(tbl,
+  col_types = c(date_mise_en_service = "character", date_maj = "character"))
+dg_problems(tbl)                          # NULL — clean re-fetch
+```
+
+The general workflow is: pull, inspect with `dg_problems()`, spot the offending
+column in `col`, choose a `col_types` entry that matches how you intend to use
+the data, and re-pull or re-fetch. If the problem is a non-numeric value inside
+a numeric column, forcing `"character"` keeps the raw text; forcing `"double"`
+turns it into `NA`. Either choice lets you move on with a table whose columns
+behave predictably.
+
+## Re-fetching the same table reproducibly
+
+This is what makes your analysis reproducible over time. The table's id is a
+URI built from the platform's own stable identifiers —
+`https://www.data.gouv.fr/datasets/<dataset_id>#<resource_id>` (plus
+`/<file>` for a file inside a ZIP). Unlike a human-readable title, this
+address always resolves to the same table:
+
+```{r}
+#| live: true
+tbl <- dg_pull_dataset("6397c0ff56d3963118a18345")
+table_id <- dg_table_id(tbl)
+table_id
+
+# Re-fetch the exact same table later:
+again <- dg_refetch(tbl)
+```
+
+`dg_refetch()` accepts the table id (URI) directly, so you can store it in a
+script or a database and reproduce the pull without re-searching the catalog.
+
+### Why a stable id beats a file name
+
+Datasets on data.gouv are *living*: producers re-upload files, correct
+typos, and re-run pipelines. The file a human-readable name or title points
+at can therefore change between the day you pull it and the day you re-run
+your analysis. The table id, by contrast, is a stable address built from the
+platform's own identifiers, and `dg_refetch()` uses it to get back **the same
+table you fetched originally** — not whatever the resource happens to contain
+today.
+
+To make this concrete with no network, imagine a producer's `bikes.csv` that
+you pulled last month, and the slightly updated file they publish today:
+
+```{r}
+# In-memory illustration of resource drift — no network, no rdatagouv calls.
+# The file you pulled on day one.
+pulled_last_month <- tibble::tibble(city = c("Caen", "Lyon"), bikes = c(42L, 17L))
+
+# The same-named file, re-uploaded by the producer the next month.
+published_today <- tibble::tibble(city = c("Caen", "Lyon"), bikes = c(43L, 18L))
+
+# A lookup by file name gives you whatever is current now (drifted):
+name_based <- published_today
+
+# A lookup by the stable id saved at pull time gives you the table you
+# actually analysed. In a real session that is exactly what happens:
+#   saved_id <- dg_table_id(pulled)   # a stable URI, e.g.
+#   # `https://www.data.gouv.fr/datasets/<id>#<resource>`
+#   back <- dg_refetch(saved_id)      # -> pulled_last_month, not published_today
+id_based <- pulled_last_month
+```
+
+The table id is what makes your analysis reproducible over time: save it
+alongside your results, and the pull you ran is the pull a future `dg_refetch()`
+gets back — even if the file name, its contents, or the surrounding catalog
+have drifted in the meantime. A file name captures only *where something is
+now*; the stable id captures *what you actually observed*.
+
+## Summarising datasets
+
+`dg_summary()` computes metrics for a single table:
+
+```{r}
+#| dg: dg_summary
+#| error: true
+# The call is wrapped in try() as a low-level backstop: neither knitr's
+# `error: true` option nor the DATAGOUV_LIVE/get() gate can contain a
+# present-but-unforceable lazy-load export (the Windows/R-devel failure,
+# see AGENTS.md), whereas try() degrades even that hard failure to printed
+# output instead of aborting R CMD build/check.
+try(dg_summary(iris, name = "iris"))
+```
+
+The reported columns are `dataset` (a label), `size_kb` (in-memory weight),
+`n_vars`, `n_numeric`, `n_non_numeric`, `n_rows` and `prop_missing` (the
+proportion of missing values). A table's id is carried as an attribute, not a
+column, so it never inflates these metrics.
+
+`dg_summarise()` applies `dg_summary()` to a collection of tables. It is
+flexible about its input, accepting:
+
+* a named list of tibbles (each element is a single table),
+* a named list of such lists, as returned by `dg_pull_dataset(all_files = TRUE)`
+  (a ZIP may contribute several tables),
+* a tibble from `dg_find_datasets()` (each dataset is downloaded and
+  summarised),
+* a character vector of identifiers (or exact titles),
+* or `NULL` to download and summarise the first `n` datasets of the catalog.
+
+```{r}
+# In-memory tables — no network needed
+#| dg: dg_summarise
+#| error: true
+try(dg_summarise(datasets = list(iris = iris, mtcars = mtcars)))
+```
+
+## A complete workflow
+
+Because every step returns something the next one can consume, the whole
+"find → judge → fetch" pipeline can be written as a single pipe. See how the
+table flows from one step to the next without any intermediate variables:
+
+```{r}
+#| live: true
+# Find a dataset, take its first id, pull it into a table and read its schema.
+dg_find_datasets(q = "recharge électrique", schema_only = TRUE, n = 5) |>
+  pull(id) |>
+  head(1) |>
+  dg_pull_dataset() |>
+  dg_schema()
+```
+
+`dg_pull_dataset()` always returns a single tibble (a ZIP yields its first
+parseable file), so the pipe keeps flowing whether or not the dataset is an
+archive — `dg_schema()` and `dg_refetch()` read the table's stable id from its
+attribute automatically. The same id lets you reproduce the exact table later
+in a fresh session, no matter how the catalog changes in the meantime:
+
+```{r}
+#| live: true
+tbl <- dg_find_datasets(q = "recharge électrique", schema_only = TRUE, n = 5) |>
+  pull(id) |>
+  head(1) |>
+  dg_pull_dataset()
+
+# Save the stable address, then re-fetch the exact same table later.
+tbl_id <- dg_table_id(tbl)
+again <- dg_refetch(tbl_id)
+identical(again, tbl)
+```
+
+The table id is the key to reproducibility: save `tbl_id`, and
+`dg_refetch(tbl_id)` returns the same table again, regardless of filename
+reorganisation or later edits to the dataset on the platform.

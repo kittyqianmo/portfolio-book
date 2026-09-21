@@ -1,0 +1,13 @@
+rdatagouv-package	rdatagouv-package
+dg_find_datasets	dg_find_datasets
+dg_find_organization	dg_find_organization
+dg_find_topics	dg_find_topics
+dg_glimpse	dg_glimpse
+dg_problems	dg_problems
+dg_pull_dataset	dg_pull_dataset
+dg_refetch	dg_refetch
+dg_schema	dg_schema
+dg_summarise	dg_summarise
+dg_summary	dg_summary
+dg_table_id	dg_table_id
+rdatagouv	rdatagouv-package

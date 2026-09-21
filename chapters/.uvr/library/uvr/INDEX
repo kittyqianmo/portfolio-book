@@ -1,0 +1,11 @@
+add                     Add packages to the project
+init                    Initialize a new uvr project
+install_uvr             Install the uvr binary
+lock                    Update the lockfile
+remove_pkgs             Remove packages from the project
+run                     Run an R script in the project environment
+sync                    Synchronize project library from lockfile
+update_pkgs             Update installed packages to the latest allowed
+                        versions
+update_uvr              Update uvr (R package + CLI binary)
+uvr-package             R Interface to the 'uvr' Package Manager

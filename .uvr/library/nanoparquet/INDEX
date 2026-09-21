@@ -1,0 +1,14 @@
+append_parquet          Append a data frame to an existing Parquet file
+edit_parquet_metadata   Edit the key-value metadata of a Parquet file
+infer_parquet_schema    Infer Parquet schema of a data frame
+nanoparquet-package     nanoparquet: Read and Write 'Parquet' Files
+nanoparquet-types       nanoparquet's type maps
+parquet-encodings       Parquet encodings
+parquet_column_types    Map between R and Parquet data types
+parquet_options         Nanoparquet options
+parquet_schema          Create a Parquet schema
+read_parquet            Read a Parquet file into a data frame
+read_parquet_info       Short summary of a Parquet file
+read_parquet_metadata   Read the metadata of a Parquet file
+read_parquet_schema     Read the schema of a Parquet file
+write_parquet           Write a data frame to a Parquet file

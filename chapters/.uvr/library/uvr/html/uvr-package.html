@@ -1,0 +1,82 @@
+<!DOCTYPE html><html><head><title>R: R Interface to the 'uvr' Package Manager</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+<script>
+const macros = { "\\R": "\\textsf{R}", "\\mbox": "\\text", "\\code": "\\texttt"};
+function processMathHTML() {
+    var l = document.getElementsByClassName('reqn');
+    for (let e of l) { katex.render(e.textContent, e, { throwOnError: false, macros }); }
+    return;
+}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
+    onload="processMathHTML();"></script>
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body><div class="container"><main>
+
+<table style="width: 100%;"><tr><td>uvr-package {uvr}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>R Interface to the 'uvr' Package Manager</h2>
+
+<h3>Description</h3>
+
+<p>Provides R functions that wrap the <code>uvr</code> command-line tool for fast,
+reproducible R package management. Use uvr to manage project dependencies
+with a lockfile, similar to how <code>uv</code> works for Python.
+</p>
+<p><strong>Main functions:</strong>
+</p>
+
+<dl>
+<dt><code><a href="../../uvr/help/init.html">init</a></code></dt><dd><p>Initialize a new uvr project</p>
+</dd>
+<dt><code><a href="../../uvr/help/add.html">add</a></code></dt><dd><p>Add packages to the project</p>
+</dd>
+<dt><code><a href="../../uvr/help/remove_pkgs.html">remove_pkgs</a></code></dt><dd><p>Remove packages from the project</p>
+</dd>
+<dt><code><a href="../../uvr/help/sync.html">sync</a></code></dt><dd><p>Install all packages from the lockfile</p>
+</dd>
+<dt><code><a href="../../uvr/help/lock.html">lock</a></code></dt><dd><p>Re-resolve dependencies and update the lockfile</p>
+</dd>
+<dt><code><a href="../../uvr/help/run.html">run</a></code></dt><dd><p>Run an R script in the project environment</p>
+</dd>
+<dt><code><a href="../../uvr/help/install_uvr.html">install_uvr</a></code></dt><dd><p>Install the uvr CLI binary</p>
+</dd>
+<dt><code><a href="../../uvr/help/update_uvr.html">update_uvr</a></code></dt><dd><p>Update both R package and CLI binary in one call</p>
+</dd>
+<dt><code><a href="../../uvr/help/update_pkgs.html">update_pkgs</a></code></dt><dd><p>Lock + sync to update installed packages to the latest allowed versions</p>
+</dd>
+<dt><code>r_install</code>, <code>r_list</code>, <code>r_use</code>, <code>r_pin</code></dt><dd><p>Manage R versions</p>
+</dd>
+</dl>
+
+<p><strong>Typical workflow:</strong>
+</p>
+<pre>
+library(uvr)
+
+# Start a new project
+init()
+
+# Add packages
+add("tidyverse")
+add("DESeq2", bioc = TRUE)
+
+# After pulling changes, sync the library
+sync()
+
+# Upgrade all packages
+lock(upgrade = TRUE)
+sync()
+</pre>
+
+
+<h3>See Also</h3>
+
+<p><a href="https://github.com/nbafrank/uvr">https://github.com/nbafrank/uvr</a>
+</p>
+
+<hr><div style="text-align: center;">[Package <em>uvr</em> version 0.1.2 <a href="00Index.html">Index</a>]</div></main>
+
+</div>
+</body></html>
